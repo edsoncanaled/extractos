@@ -225,9 +225,41 @@ body::after{
 <!-- TU HTML Y CSS SE QUEDAN IGUAL -->
 
 <script>
+/* ═══════════════════════════════════════════════════════
+   CONFIGURA TUS IMÁGENES
+   Descomenta y rellena con tus URLs de GitHub raw
+═══════════════════════════════════════════════════════ */
+const IMGS = [
+  { src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG', a:'DÍAS',   b:'POR DELANTE'},
+  { src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo3.png', a:'LUZ',    b:'OBLICUA'   },
+  // { src:'...foto03.JPG', a:'VIENTO',  b:'SUR'       },
+  // { src:'...foto04.JPG', a:'MARZO',   b:'TARDE'     },
+  // { src:'...foto05.JPG', a:'SILENCIO',b:'FORMA'     },
+  // { src:'...foto06.JPG', a:'ARENA',   b:'BLANCA'    },
+  // { src:'...foto07.JPG', a:'SOMBRA',  b:'LARGA'     },
+  // { src:'...foto08.JPG', a:'RÍO',     b:'ABAJO'     },
+  // { src:'...foto09.JPG', a:'TIERRA',  b:'ADENTRO'   },
+  // { src:'...foto10.JPG', a:'NOCHE',   b:'ABIERTA'   },
+  // { src:'...foto11.JPG', a:'CAMPO',   b:'VACÍO'     },
+  // { src:'...foto12.JPG', a:'AGUA',    b:'QUIETA'    },
+  // { src:'...foto13.JPG', a:'PIEDRA',  b:'GRIS'      },
+  // { src:'...foto14.JPG', a:'CIELO',   b:'BAJO'      },
+  // { src:'...foto15.JPG', a:'FIN',     b:'DE SERIE'  },
+];
+
+const PH=[
+  {a:'DÍAS',b:'POR DELANTE'},{a:'LUZ',b:'OBLICUA'},{a:'VIENTO',b:'SUR'},
+  {a:'MARZO',b:'TARDE'},{a:'SILENCIO',b:'FORMA'},{a:'ARENA',b:'BLANCA'},
+  {a:'SOMBRA',b:'LARGA'},{a:'RÍO',b:'ABAJO'},{a:'TIERRA',b:'ADENTRO'},
+  {a:'NOCHE',b:'ABIERTA'},{a:'CAMPO',b:'VACÍO'},{a:'AGUA',b:'QUIETA'},
+  {a:'PIEDRA',b:'GRIS'},{a:'CIELO',b:'BAJO'},{a:'FIN',b:'DE SERIE'},
+];
+
+const N=15;
+const FTOTAL=Math.ceil((N+1)/2); // 8 flip pages
 
 /* ── SIZES ── */
-let PW, PH_px;
+let PW, PH_px; // single page width, height
 function calcSize(){
   const vw=window.innerWidth, vh=window.innerHeight;
   PH_px=Math.min(vh*0.82, 720);
@@ -241,132 +273,540 @@ const pgL=document.getElementById('pg-left');
 const pgR=document.getElementById('pg-right');
 const canvas=document.getElementById('flip-canvas');
 const ctx=canvas.getContext('2d');
-const DPR = Math.min(window.devicePixelRatio||1, 2);
+const hotR=document.getElementById('hot-right');
+const hotL=document.getElementById('hot-left');
+
+const DPR = Math.min(window.devicePixelRatio||1, 2); // cap at 2x
 
 function layoutBook(){
   wrap.style.width=PW*2+'px';
   wrap.style.height=PH_px+'px';
-
+  wrap.style.position='relative';
+  wrap.style.transform='perspective(3000px) rotateX(3deg) rotateY(-1.5deg)';
+  wrap.style.filter='drop-shadow(0 70px 130px rgba(0,0,0,.95)) drop-shadow(0 20px 40px rgba(0,0,0,.7))';
+  pgL.style.cssText=width:${PW}px;height:${PH_px}px;left:0;
+  pgR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;
+  // Canvas at physical pixels for sharpness
   canvas.width=PW*2*DPR;
   canvas.height=PH_px*DPR;
   canvas.style.width=PW*2+'px';
   canvas.style.height=PH_px+'px';
-
-  // 🔥 FIX IMPORTANTE
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.scale(DPR, DPR);
+  ctx.scale(DPR,DPR);
+  hotR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;
+  hotL.style.cssText=width:${PW}px;height:${PH_px}px;left:0;
 }
 layoutBook();
 
+/* ── PAGE HTML GENERATORS ── */
+function pageHTML(idx){
+  if(idx===0) return coverHTML();
+  if(idx>N)   return bcovHTML();
+  const d=IMGS[idx-1]||null, p=PH[idx-1];
+  const n=String(idx).padStart(2,'0');
+  const a=(d&&d.a)||p.a, b=(d&&d.b)||p.b;
+  const isL=idx%2===1;
+  if(d){
+    return `<div class="pi">
+      <img class="full-img" src="${d.src}" alt="${a}" loading="lazy">
+      <span class="lbl lbl-cl">${a}</span>
+      <span class="lbl lbl-cr">${b}</span>
+      <span class="lbl-num ${isL?'l':'r'}">${n}</span>
+    </div>`;
+  } else {
+    return `<div class="pi no-img">
+      <div class="strip-ph"><span>imagen ${n}</span></div>
+      <span class="lbl lbl-cl">${a}</span>
+      <span class="lbl lbl-cr">${b}</span>
+      <span class="lbl-num ${isL?'l':'r'}">${n}</span>
+    </div>`;
+  }
+}
+
+function coverHTML(){
+  return `<div class="cov" style="position:relative;overflow:hidden;">
+    <img src="https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG"
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:none">
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(237,234,222,.15) 0%,transparent 25%,transparent 75%,rgba(237,234,222,.2) 100%);z-index:1;pointer-events:none"></div>
+    <div style="position:absolute;inset:26px;border:.5px solid rgba(237,234,222,.22);z-index:2;pointer-events:none"></div>
+    <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%">
+      <p class="cov-ey" style="color:rgba(237,234,222,.5)">Edición I · 2025</p>
+      <h2 class="cov-t" style="color:#edeade;text-shadow:0 1px 18px rgba(0,0,0,.5)">Extractos</h2>
+      <div class="cov-r" style="background:rgba(237,234,222,.3)"></div>
+      <p class="cov-s" style="color:rgba(237,234,222,.38)">Colección visual</p>
+    </div>
+    <span class="cov-yr" style="color:rgba(237,234,222,.28);z-index:3">© 2025</span>
+  </div>`;
+}
+function bcovHTML(){
+  return <div class="bcov"><span>extractos</span></div>;
+}
+
+/* ── OFFSCREEN PAGE POOL ── */
+const pool=document.getElementById('page-pool');
+const poolPages=[];
+// Build pool: 0=cover, 1-15=images, 16=backcover
+for(let i=0;i<=N+1;i++){
+  const div=document.createElement('div');
+  div.className='pool-page';
+  div.style.width=PW+'px';
+  div.style.height=PH_px+'px';
+  div.innerHTML=pageHTML(i);
+  pool.appendChild(div);
+  poolPages.push(div);
+}
+
+/* ── Page → Offscreen canvas (direct draw, no foreignObject) ── */
+const imgCache={};
+
+// Pre-loaded Image objects keyed by src
+const srcImgCache={};
+function loadSrc(src, cb){
+  if(!src){cb(null);return;}
+  if(srcImgCache[src]){cb(srcImgCache[src]);return;}
+  const im=new Image();
+  im.crossOrigin='anonymous';
+  im.onload=()=>{srcImgCache[src]=im;cb(im);};
+  im.onerror=()=>{srcImgCache[src]=null;cb(null);};
+  im.src=src;
+}
+
+function buildPageCanvas(idx, cb){
+  const key=${idx}_${PW}_${PH_px};
+  if(imgCache[key]){cb(imgCache[key]);return;}
+
+  const oc=document.createElement('canvas');
+  oc.width=Math.round(PW*DPR);
+  oc.height=Math.round(PH_px*DPR);
+  const oc2=oc.getContext('2d');
+  oc2.scale(DPR,DPR);
+
+  function finish(){
+    imgCache[key]=oc;
+    cb(oc);
+  }
+
+  // Paper background
+  oc2.fillStyle='#edeade';
+  oc2.fillRect(0,0,PW,PH_px);
+
+  if(idx===0){
+    // Cover: load ejemplo2
+    const src='https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG';
+    loadSrc(src,im=>{
+      if(im) oc2.drawImage(im,0,0,PW,PH_px);
+      // overlay
+      const grad=oc2.createLinearGradient(0,0,0,PH_px);
+      grad.addColorStop(0,'rgba(0,0,0,0.1)');
+      grad.addColorStop(0.5,'rgba(0,0,0,0)');
+      grad.addColorStop(1,'rgba(0,0,0,0.15)');
+      oc2.fillStyle=grad; oc2.fillRect(0,0,PW,PH_px);
+      // title text
+      oc2.fillStyle='rgba(237,234,222,0.9)';
+      oc2.font=italic ${Math.round(PW*0.11)}px "EB Garamond",Georgia,serif;
+      oc2.textAlign='center';
+      oc2.fillText('Extractos',PW/2,PH_px*0.48);
+      oc2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+      oc2.fillStyle='rgba(237,234,222,0.5)';
+      oc2.fillText('EDICIÓN I  ·  2025',PW/2,PH_px*0.38);
+      // thin border
+      oc2.strokeStyle='rgba(237,234,222,0.2)';
+      oc2.lineWidth=0.5;
+      oc2.strokeRect(22,22,PW-44,PH_px-44);
+      finish();
+    });
+    return;
+  }
+
+  if(idx>N){
+    // Back cover
+    oc2.fillStyle='#edeade';
+    oc2.fillRect(0,0,PW,PH_px);
+    oc2.strokeStyle='#d8d4cb'; oc2.lineWidth=0.5;
+    oc2.strokeRect(22,22,PW-44,PH_px-44);
+    oc2.font=italic ${Math.round(PW*0.055)}px "EB Garamond",Georgia,serif;
+    oc2.fillStyle='#ccc'; oc2.textAlign='center';
+    oc2.fillText('extractos',PW/2,PH_px/2+8);
+    finish();
+    return;
+  }
+
+  // Content page
+  const d=IMGS[idx-1]||null;
+  const p=PH[idx-1];
+  const n=String(idx).padStart(2,'0');
+  const a=(d&&d.a)||p.a, b=(d&&d.b)||p.b;
+  const isL=idx%2===1;
+
+  if(d && d.src){
+    loadSrc(d.src, im=>{
+      if(im){
+        // Full page image
+        oc2.drawImage(im,0,0,PW,PH_px);
+        // Subtle bottom gradient for text readability
+        const g=oc2.createLinearGradient(0,PH_px*0.7,0,PH_px);
+        g.addColorStop(0,'rgba(0,0,0,0)');
+        g.addColorStop(1,'rgba(0,0,0,0.45)');
+        oc2.fillStyle=g; oc2.fillRect(0,0,PW,PH_px);
+        drawPageText(oc2,a,b,n,isL,'rgba(255,255,255,0.9)','rgba(255,255,255,0.4)');
+      } else {
+        drawPlaceholder(oc2,n,a,b,isL);
+      }
+      finish();
+    });
+  } else {
+    drawPlaceholder(oc2,n,a,b,isL);
+    finish();
+  }
+}
+
+function drawPageText(c2,a,b,n,isL,col,dimCol){
+  const fs=Math.round(PW*0.026);
+  c2.font=300 ${fs}px "IBM Plex Mono",monospace;
+  c2.letterSpacing='2px';
+  c2.fillStyle=col;
+  c2.textAlign='left';
+  c2.fillText(a, 28, PH_px-46);
+  c2.textAlign='right';
+  c2.fillText(b, PW-28, PH_px-46);
+  // page number
+  c2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+  c2.fillStyle=dimCol;
+  if(isL){ c2.textAlign='left'; c2.fillText(n,28,PH_px-28); }
+  else   { c2.textAlign='right'; c2.fillText(n,PW-28,PH_px-28); }
+}
+
+function drawPlaceholder(c2,n,a,b,isL){
+  c2.fillStyle='#edeade'; c2.fillRect(0,0,PW,PH_px);
+  const my=PH_px/2, h=PH_px*0.33;
+  c2.strokeStyle='#ccc'; c2.lineWidth=0.5;
+  c2.beginPath(); c2.moveTo(PW*0.08,my-h/2); c2.lineTo(PW*0.92,my-h/2); c2.stroke();
+  c2.beginPath(); c2.moveTo(PW*0.08,my+h/2); c2.lineTo(PW*0.92,my+h/2); c2.stroke();
+  c2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+  c2.fillStyle='#ccc'; c2.textAlign='center';
+  c2.fillText(imagen ${n},PW/2,my+6);
+  drawPageText(c2,a,b,n,isL,'#333','#bbb');
+}
+
+function domToCanvas(idx,cb){ buildPageCanvas(idx,cb); }
+
+/* ── STATE ── */
+let cur=0;
+let flipping=false;
+let flipDir=1; // 1=forward, -1=backward
+let flipProgress=0; // 0..1
+let flipRAF=null;
+let flipFromIdx=0, flipFrontIdx=0, flipBackIdx=0;
+// Images used during flip
+let imgFlipFront=null, imgFlipBack=null;
+
+/* ── STATIC HALVES ── */
+function setStaticLeft(idx){
+  pgL.innerHTML=poolPages[idx]?poolPages[idx].innerHTML:'';
+}
+function setStaticRight(idx){
+  pgR.innerHTML=poolPages[idx]?poolPages[idx].innerHTML:'';
+}
+
+function refreshStatic(){
+  // Left = back of last flipped page (or back cover placeholder)
+  const lIdx = cur===0 ? N+1 : (cur*2); // back of page[cur-1]
+  // Right = front of current top page
+  const rIdx = cur<FTOTAL ? cur*2 : N+1;
+
+  // Left static shows: if cur===0, back cover; else back face of last-flipped
+  if(cur===0){
+    setStaticLeft(N+1);
+  } else {
+    const backFaceIdx = (cur-1)*2+1;
+    setStaticLeft(Math.min(backFaceIdx, N+1));
+  }
+  // Right static
+  if(cur<FTOTAL){
+    setStaticRight(cur===0?0:cur*2);
+  } else {
+    setStaticRight(N+1);
+  }
+}
+
 /* ── CANVAS CLEAR ── */
 function clearCanvas(){
+  // Use logical coords (DPR scaling is handled by ctx.scale in layoutBook)
   ctx.clearRect(0,0,PW*2,PH_px);
 }
 
-/* ── EASING ── */
-function easeInOut(t){
-  return t < 0.5
-    ? 2 * t * t
-    : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
+/* ═══════════════════════════════════════════════════════
+   REALISTIC PAGE CURL ENGINE
+   
+   Approach: quadratic bezier warp on canvas.
+   The page bends — we clip+transform the front and back
+   faces using a curved path (not just a flat rotate).
+   
+   Progress 0→0.5: page lifts and curves (right half visible, bending)
+   Progress 0.5→1: page lands on left (back face visible, unbending)
+═══════════════════════════════════════════════════════ */
 
-/* ── DRAW FLIP CORREGIDO ── */
 function drawFlip(progress, frontImg, backImg){
   clearCanvas();
 
   const W=PW, H=PH_px;
-  const spine=W;
+  const spine=W; // x position of spine in canvas coords (center)
 
+  // progress 0=page fully on right, 1=page fully on left
+  // angle in radians: 0→PI
   const angle = progress * Math.PI;
 
-  // 🌀 curva ligera
-  const curve = Math.sin(angle) * 20;
-  const foldX = spine + W * Math.cos(angle) - curve;
+  // Fold point travels from right edge (spine+W) to spine (W) and to (0)
+  // The "fold x" in canvas space:
+  // At progress=0: fold is at spine+W (far right edge of right page)
+  // At progress=0.5: fold is at spine (spine line) — peak of arc
+  // At progress=1: fold is at spine-W (far left edge of left page)
+  const foldX = spine + W * Math.cos(angle); // W*cos(0)=W, cos(PI/2)=0, cos(PI)=-W
 
-  /* BACK FACE */
+  // Shadow width — max at progress=0.5
+  const shadowIntensity = Math.sin(angle);
+
+  // ── BACK FACE (left half of flipping page, visible when angle>PI/2) ──
   if(progress > 0.5 && backImg){
     ctx.save();
+    // The back face occupies from foldX leftward to spine
+    // We need to draw backImg mirrored
+    const backWidth = spine - foldX; // negative when foldX<spine
 
+    // Clip to left half (already turned)
     ctx.beginPath();
     ctx.rect(0, 0, spine, H);
     ctx.clip();
 
+    // The back face: draw mirrored, mapping [foldX..spine] → [0..backImg.width]
     const w = spine - foldX;
-
     if(w > 0){
-      ctx.drawImage(
-        backImg,
-        0, 0, w, H,
-        foldX, 0, w, H
-      );
-    }
+      ctx.save();
+      // Draw with curl shading
+      ctx.drawImage(backImg, foldX, 0, w, H);
 
+      // Curl shadow on back face (darker near fold)
+      const shd2=ctx.createLinearGradient(foldX,0,foldX+w*0.4,0);
+      shd2.addColorStop(0,'rgba(0,0,0,0.28)');
+      shd2.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shd2;
+      ctx.fillRect(foldX,0,w,H);
+      ctx.restore();
+    }
     ctx.restore();
   }
 
-  /* FRONT FACE */
+  // ── FRONT FACE (right half of page, compressed as it turns) ──
   if(progress <= 0.5 && frontImg){
     ctx.save();
-
+    // Clip to right half
     ctx.beginPath();
     ctx.rect(spine, 0, W, H);
     ctx.clip();
 
-    const w = foldX - spine;
-
+    const w = foldX - spine; // shrinks as foldX→spine
     if(w > 0){
-      ctx.drawImage(
-        frontImg,
-        PW - w, 0, w, H,
-        spine, 0, w, H
-      );
-    }
+      ctx.save();
+      // frontImg is an offscreen canvas scaled at DPR — draw at logical coords
+      ctx.drawImage(frontImg, spine, 0, w, H);
 
+      // Shadow — darker near fold edge (foldX)
+      const shd=ctx.createLinearGradient(foldX-w*0.3,0,foldX,0);
+      shd.addColorStop(0,'rgba(0,0,0,0)');
+      shd.addColorStop(1,rgba(0,0,0,${0.35*shadowIntensity}));
+      ctx.fillStyle=shd;
+      ctx.fillRect(spine,0,w,H);
+      ctx.restore();
+    }
     ctx.restore();
   }
 
-  /* HIGHLIGHT */
+  // During mid-flip (both visible, progress near 0.5): blend region
   if(progress > 0.35 && progress < 0.65){
+    // The fold itself: thin bright highlight then dark edge
     const fx = foldX;
-    const spec=ctx.createLinearGradient(fx-3,0,fx+3,0);
-    spec.addColorStop(0,'rgba(255,255,255,0)');
-    spec.addColorStop(0.5,'rgba(255,255,255,0.3)');
-    spec.addColorStop(1,'rgba(0,0,0,0.2)');
-    ctx.fillStyle=spec;
-    ctx.fillRect(fx-3,0,6,H);
+    if(fx > 2 && fx < W*2-2){
+      // bright specular line at fold
+      const spec=ctx.createLinearGradient(fx-3,0,fx+3,0);
+      spec.addColorStop(0,'rgba(255,255,255,0)');
+      spec.addColorStop(0.4,'rgba(255,255,255,0.22)');
+      spec.addColorStop(0.5,'rgba(255,255,255,0.35)');
+      spec.addColorStop(0.6,'rgba(0,0,0,0.18)');
+      spec.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=spec;
+      ctx.fillRect(fx-3,0,6,H);
+    }
   }
 
-  /* SOMBRA CENTRAL */
+  // ── CAST SHADOW on static pages ──
+  if(shadowIntensity > 0.02){
+    // Shadow cast onto left page when turning forward
+    if(progress < 0.5){
+      // Shadow from spine leftward while page lifts
+      const sw = W * shadowIntensity * 0.5;
+      const shd=ctx.createLinearGradient(spine,0,spine-sw,0);
+      shd.addColorStop(0,rgba(0,0,0,${0.22*shadowIntensity}));
+      shd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shd;
+      ctx.fillRect(spine-sw,0,sw,H);
+    } else {
+      // Shadow cast onto right page as page lands
+      const sw = W * (1-shadowIntensity) * 0.4;
+      const shd=ctx.createLinearGradient(spine,0,spine+sw+20,0);
+      shd.addColorStop(0,rgba(0,0,0,${0.18*(1-progress)*2}));
+      shd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=shd;
+      ctx.fillRect(spine,0,sw+20,H);
+    }
+  }
+
+  // ── SPINE SHADOW (always) ──
   const spineSh=ctx.createLinearGradient(spine-4,0,spine+4,0);
-  spineSh.addColorStop(0,'rgba(0,0,0,0.3)');
+  spineSh.addColorStop(0,'rgba(0,0,0,0.35)');
   spineSh.addColorStop(0.5,'rgba(0,0,0,0.08)');
   spineSh.addColorStop(1,'rgba(0,0,0,0.2)');
   ctx.fillStyle=spineSh;
   ctx.fillRect(spine-4,0,8,H);
 }
 
-/* ── ANIMACIÓN ── */
-let flipStart=null;
-const FLIP_DURATION = 820;
+/* ── EASING ── */
+function easeInOut(t){
+  // Smooth: slow start, fast middle, slow end — like real paper
+  return t<.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2;
+}
+function easeOut(t){ return 1-Math.pow(1-t,3); }
 
+/* ── FLIP ANIMATION ── */
+const FLIP_DURATION = 820; // ms
+
+function startFlip(dir, frontIdx, backIdx){
+  if(flipping) return;
+  flipping=true;
+  flipDir=dir;
+  flipFrontIdx=frontIdx;
+  flipBackIdx=backIdx;
+  flipProgress=0;
+
+  // Load both face images, then animate
+  let loaded=0;
+  function onLoad(){ if(++loaded===2) animateFlip(); }
+  domToCanvas(frontIdx, img=>{ imgFlipFront=img; onLoad(); });
+  domToCanvas(backIdx,  img=>{ imgFlipBack=img;  onLoad(); });
+}
+
+let flipStart=null;
 function animateFlip(ts){
   if(!flipStart) flipStart=ts||performance.now();
-
   const elapsed=(ts||performance.now())-flipStart;
   let t=Math.min(elapsed/FLIP_DURATION,1);
-
   t=easeInOut(t);
 
-  drawFlip(t, imgFlipFront, imgFlipBack);
+  flipProgress = flipDir===1 ? t : 1-t;
+
+  drawFlip(flipProgress, imgFlipFront, imgFlipBack);
 
   if(elapsed<FLIP_DURATION){
-    requestAnimationFrame(animateFlip);
+    flipRAF=requestAnimationFrame(animateFlip);
   } else {
+    // Done
     clearCanvas();
+    flipping=false;
     flipStart=null;
+    flipRAF=null;
+    refreshStatic();
+    setNav();
   }
 }
 
+function animateFlipStart(){
+  flipStart=null;
+  flipRAF=requestAnimationFrame(animateFlip);
+}
+
+/* ── NEXT / PREV ── */
+function next(){
+  if(flipping||cur>=FTOTAL) return;
+  const frontIdx=cur===0?0:cur*2;   // face shown on right before flip
+  const backIdx=cur*2+1;            // face shown on left after flip
+  cur++;
+  setNav();
+  startFlip(1, frontIdx, Math.min(backIdx,N+1));
+  animateFlipStart();
+}
+
+function prev(){
+  if(flipping||cur<=0) return;
+  const backIdx=(cur-1)*2+1;        // face on left (will become front)
+  const frontIdx=(cur-1)===0?0:(cur-1)*2; // face on right (returning)
+  cur--;
+  setNav();
+  startFlip(-1, Math.min(frontIdx,N+1), Math.min(backIdx,N+1));
+  animateFlipStart();
+}
+
+/* ── NAV REFRESH ── */
+function setNav(){
+  document.getElementById('bp').disabled=cur<=0;
+  document.getElementById('bn').disabled=cur>=FTOTAL;
+  const el=document.getElementById('ctr');
+  if(cur===0){el.textContent='portada';return}
+  if(cur>=FTOTAL){el.textContent='fin';return}
+  const l=cur*2-1, r=cur*2;
+  el.textContent=${String(l).padStart(2,'0')} · ${r<=N?String(r).padStart(2,'0'):'—'};
+}
+
+/* ── OPEN / CLOSE ── */
+function openBook(){
+  document.getElementById('intro').classList.add('gone');
+  document.getElementById('stage').classList.add('on');
+  document.getElementById('nav').classList.add('on');
+  document.getElementById('xb').classList.add('on');
+  document.getElementById('kh').classList.add('on');
+  refreshStatic(); setNav(); clearCanvas();
+  // Preload first few pages
+  for(let i=0;i<Math.min(4,N+2);i++) domToCanvas(i,()=>{});
+}
+
+function closeBook(){
+  if(flipRAF){ cancelAnimationFrame(flipRAF); flipRAF=null; }
+  flipping=false; flipStart=null;
+  ['stage','nav','xb','kh'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  setTimeout(()=>{
+    cur=0; clearCanvas(); refreshStatic(); setNav();
+    document.getElementById('intro').classList.remove('gone');
+  },600);
+}
+
+/* ── CLICK HOTSPOTS ── */
+// Right half = next, left half = prev (with debounce guard via flipping flag)
+hotR.addEventListener('click', e=>{ e.stopPropagation(); next(); });
+hotL.addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+
+/* ── KEYBOARD ── */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Escape') closeBook();
+});
+
+/* ── TOUCH ── */
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>45) dx<0?next():prev();
+},{passive:true});
+
+/* ── RESIZE ── */
+window.addEventListener('resize',()=>{
+  calcSize();
+  layoutBook(); // also resets canvas + ctx.scale
+  poolPages.forEach(d=>{ d.style.width=PW+'px'; d.style.height=PH_px+'px'; });
+  Object.keys(imgCache).forEach(k=>delete imgCache[k]);
+  clearCanvas(); refreshStatic();
+});
+
+/* ── INIT ── */
+refreshStatic(); setNav(); clearCanvas();
 </script>
 </body>
 </html>
