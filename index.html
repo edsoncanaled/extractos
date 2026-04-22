@@ -273,19 +273,22 @@ const ctx=canvas.getContext('2d');
 const hotR=document.getElementById('hot-right');
 const hotL=document.getElementById('hot-left');
 
+const DPR = Math.min(window.devicePixelRatio||1, 2); // cap at 2x
+
 function layoutBook(){
   wrap.style.width=PW*2+'px';
   wrap.style.height=PH_px+'px';
   wrap.style.position='relative';
-  // subtle 3D tilt via CSS transform on wrap parent
   wrap.style.transform='perspective(3000px) rotateX(3deg) rotateY(-1.5deg)';
   wrap.style.filter='drop-shadow(0 70px 130px rgba(0,0,0,.95)) drop-shadow(0 20px 40px rgba(0,0,0,.7))';
   pgL.style.cssText=`width:${PW}px;height:${PH_px}px;left:0`;
   pgR.style.cssText=`width:${PW}px;height:${PH_px}px;right:0`;
-  canvas.width=PW*2;
-  canvas.height=PH_px;
+  // Canvas at physical pixels for sharpness
+  canvas.width=PW*2*DPR;
+  canvas.height=PH_px*DPR;
   canvas.style.width=PW*2+'px';
   canvas.style.height=PH_px+'px';
+  ctx.scale(DPR,DPR);
   hotR.style.cssText=`width:${PW}px;height:${PH_px}px;right:0`;
   hotL.style.cssText=`width:${PW}px;height:${PH_px}px;left:0`;
 }
@@ -349,38 +352,139 @@ for(let i=0;i<=N+1;i++){
   poolPages.push(div);
 }
 
-/* ── HTML → Canvas via foreignObject ── */
+/* ── Page → Offscreen canvas (direct draw, no foreignObject) ── */
 const imgCache={};
-function domToCanvas(idx,callback){
-  const key=idx+'_'+PW+'_'+PH_px;
-  if(imgCache[key]){callback(imgCache[key]);return;}
-  const el=poolPages[idx];
-  const html=`<svg xmlns="http://www.w3.org/2000/svg" width="${PW}" height="${PH_px}">
-    <foreignObject width="100%" height="100%">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${PW}px;height:${PH_px}px;overflow:hidden;">
-        ${el.outerHTML}
-      </div>
-    </foreignObject>
-  </svg>`;
-  const blob=new Blob([html],{type:'image/svg+xml'});
-  const url=URL.createObjectURL(blob);
-  const img=new Image();
-  img.onload=()=>{
-    imgCache[key]=img;
-    URL.revokeObjectURL(url);
-    callback(img);
-  };
-  img.onerror=()=>{
-    // fallback: draw plain paper color
-    const oc=document.createElement('canvas');
-    oc.width=PW;oc.height=PH_px;
-    const oc2=oc.getContext('2d');
-    oc2.fillStyle='#edeade';oc2.fillRect(0,0,PW,PH_px);
-    const fi=new Image();fi.src=oc.toDataURL();
-    imgCache[key]=fi;callback(fi);
-  };
-  img.src=url;
+
+// Pre-loaded Image objects keyed by src
+const srcImgCache={};
+function loadSrc(src, cb){
+  if(!src){cb(null);return;}
+  if(srcImgCache[src]){cb(srcImgCache[src]);return;}
+  const im=new Image();
+  im.crossOrigin='anonymous';
+  im.onload=()=>{srcImgCache[src]=im;cb(im);};
+  im.onerror=()=>{srcImgCache[src]=null;cb(null);};
+  im.src=src;
 }
+
+function buildPageCanvas(idx, cb){
+  const key=`${idx}_${PW}_${PH_px}`;
+  if(imgCache[key]){cb(imgCache[key]);return;}
+
+  const oc=document.createElement('canvas');
+  oc.width=Math.round(PW*DPR);
+  oc.height=Math.round(PH_px*DPR);
+  const oc2=oc.getContext('2d');
+  oc2.scale(DPR,DPR);
+
+  function finish(){
+    imgCache[key]=oc;
+    cb(oc);
+  }
+
+  // Paper background
+  oc2.fillStyle='#edeade';
+  oc2.fillRect(0,0,PW,PH_px);
+
+  if(idx===0){
+    // Cover: load ejemplo2
+    const src='https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG';
+    loadSrc(src,im=>{
+      if(im) oc2.drawImage(im,0,0,PW,PH_px);
+      // overlay
+      const grad=oc2.createLinearGradient(0,0,0,PH_px);
+      grad.addColorStop(0,'rgba(0,0,0,0.1)');
+      grad.addColorStop(0.5,'rgba(0,0,0,0)');
+      grad.addColorStop(1,'rgba(0,0,0,0.15)');
+      oc2.fillStyle=grad; oc2.fillRect(0,0,PW,PH_px);
+      // title text
+      oc2.fillStyle='rgba(237,234,222,0.9)';
+      oc2.font=`italic ${Math.round(PW*0.11)}px "EB Garamond",Georgia,serif`;
+      oc2.textAlign='center';
+      oc2.fillText('Extractos',PW/2,PH_px*0.48);
+      oc2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
+      oc2.fillStyle='rgba(237,234,222,0.5)';
+      oc2.fillText('EDICIÓN I  ·  2025',PW/2,PH_px*0.38);
+      // thin border
+      oc2.strokeStyle='rgba(237,234,222,0.2)';
+      oc2.lineWidth=0.5;
+      oc2.strokeRect(22,22,PW-44,PH_px-44);
+      finish();
+    });
+    return;
+  }
+
+  if(idx>N){
+    // Back cover
+    oc2.fillStyle='#edeade';
+    oc2.fillRect(0,0,PW,PH_px);
+    oc2.strokeStyle='#d8d4cb'; oc2.lineWidth=0.5;
+    oc2.strokeRect(22,22,PW-44,PH_px-44);
+    oc2.font=`italic ${Math.round(PW*0.055)}px "EB Garamond",Georgia,serif`;
+    oc2.fillStyle='#ccc'; oc2.textAlign='center';
+    oc2.fillText('extractos',PW/2,PH_px/2+8);
+    finish();
+    return;
+  }
+
+  // Content page
+  const d=IMGS[idx-1]||null;
+  const p=PH[idx-1];
+  const n=String(idx).padStart(2,'0');
+  const a=(d&&d.a)||p.a, b=(d&&d.b)||p.b;
+  const isL=idx%2===1;
+
+  if(d && d.src){
+    loadSrc(d.src, im=>{
+      if(im){
+        // Full page image
+        oc2.drawImage(im,0,0,PW,PH_px);
+        // Subtle bottom gradient for text readability
+        const g=oc2.createLinearGradient(0,PH_px*0.7,0,PH_px);
+        g.addColorStop(0,'rgba(0,0,0,0)');
+        g.addColorStop(1,'rgba(0,0,0,0.45)');
+        oc2.fillStyle=g; oc2.fillRect(0,0,PW,PH_px);
+        drawPageText(oc2,a,b,n,isL,'rgba(255,255,255,0.9)','rgba(255,255,255,0.4)');
+      } else {
+        drawPlaceholder(oc2,n,a,b,isL);
+      }
+      finish();
+    });
+  } else {
+    drawPlaceholder(oc2,n,a,b,isL);
+    finish();
+  }
+}
+
+function drawPageText(c2,a,b,n,isL,col,dimCol){
+  const fs=Math.round(PW*0.026);
+  c2.font=`300 ${fs}px "IBM Plex Mono",monospace`;
+  c2.letterSpacing='2px';
+  c2.fillStyle=col;
+  c2.textAlign='left';
+  c2.fillText(a, 28, PH_px-46);
+  c2.textAlign='right';
+  c2.fillText(b, PW-28, PH_px-46);
+  // page number
+  c2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
+  c2.fillStyle=dimCol;
+  if(isL){ c2.textAlign='left'; c2.fillText(n,28,PH_px-28); }
+  else   { c2.textAlign='right'; c2.fillText(n,PW-28,PH_px-28); }
+}
+
+function drawPlaceholder(c2,n,a,b,isL){
+  c2.fillStyle='#edeade'; c2.fillRect(0,0,PW,PH_px);
+  const my=PH_px/2, h=PH_px*0.33;
+  c2.strokeStyle='#ccc'; c2.lineWidth=0.5;
+  c2.beginPath(); c2.moveTo(PW*0.08,my-h/2); c2.lineTo(PW*0.92,my-h/2); c2.stroke();
+  c2.beginPath(); c2.moveTo(PW*0.08,my+h/2); c2.lineTo(PW*0.92,my+h/2); c2.stroke();
+  c2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
+  c2.fillStyle='#ccc'; c2.textAlign='center';
+  c2.fillText(`imagen ${n}`,PW/2,my+6);
+  drawPageText(c2,a,b,n,isL,'#333','#bbb');
+}
+
+function domToCanvas(idx,cb){ buildPageCanvas(idx,cb); }
 
 /* ── STATE ── */
 let cur=0;
@@ -423,7 +527,8 @@ function refreshStatic(){
 
 /* ── CANVAS CLEAR ── */
 function clearCanvas(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // Use logical coords (DPR scaling is handled by ctx.scale in layoutBook)
+  ctx.clearRect(0,0,PW*2,PH_px);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -498,7 +603,7 @@ function drawFlip(progress, frontImg, backImg){
     const w = foldX - spine; // shrinks as foldX→spine
     if(w > 0){
       ctx.save();
-      // Draw front stretched to fill spine→foldX
+      // frontImg is an offscreen canvas scaled at DPR — draw at logical coords
       ctx.drawImage(frontImg, spine, 0, w, H);
 
       // Shadow — darker near fold edge (foldX)
@@ -669,8 +774,9 @@ function closeBook(){
 }
 
 /* ── CLICK HOTSPOTS ── */
-hotR.addEventListener('click',()=>next());
-hotL.addEventListener('click',()=>prev());
+// Right half = next, left half = prev (with debounce guard via flipping flag)
+hotR.addEventListener('click', e=>{ e.stopPropagation(); next(); });
+hotL.addEventListener('click', e=>{ e.stopPropagation(); prev(); });
 
 /* ── KEYBOARD ── */
 document.addEventListener('keydown',e=>{
@@ -690,12 +796,9 @@ document.addEventListener('touchend',e=>{
 /* ── RESIZE ── */
 window.addEventListener('resize',()=>{
   calcSize();
-  layoutBook();
-  // Resize pool pages
+  layoutBook(); // also resets canvas + ctx.scale
   poolPages.forEach(d=>{ d.style.width=PW+'px'; d.style.height=PH_px+'px'; });
-  // Clear cache
   Object.keys(imgCache).forEach(k=>delete imgCache[k]);
-  canvas.width=PW*2; canvas.height=PH_px;
   clearCanvas(); refreshStatic();
 });
 
