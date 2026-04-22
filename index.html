@@ -1,9 +1,860 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Extractos</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revista Editorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f4f0eb;
+    --paper-dark: #e8e2d9;
+    --accent: #c8a96e;
+    --accent-dark: #9a7a44;
+    --red: #b03030;
+    --shadow: rgba(0,0,0,0.35);
+    --page-w: 420px;
+    --page-h: 580px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    user-select: none;
+  }
+
+  /* ── BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, #1a1510 0%, #0a0a0a 100%);
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='%23ffffff08'/%3E%3C/svg%3E");
+    z-index: 0;
+  }
+
+  /* ── TITLE ── */
+  #title-screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    background: var(--ink);
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  #title-screen.hidden { opacity: 0; visibility: hidden; }
+
+  .title-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 6px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .title-main {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 900;
+    color: var(--paper);
+    letter-spacing: -2px;
+    line-height: 0.9;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .title-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--paper-dark);
+    margin-top: 20px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.9s forwards;
+  }
+  .title-line {
+    width: 1px;
+    height: 0;
+    background: var(--accent);
+    margin: 32px auto;
+    animation: growLine 0.6s 1.2s forwards;
+  }
+  .open-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--accent);
+    border: none; cursor: pointer;
+    padding: 14px 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.5s forwards;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .open-btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes growLine {
+    from { height: 0; }
+    to   { height: 60px; }
+  }
+
+  /* ── SCENE ── */
+  #scene {
+    position: fixed; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    perspective: 2400px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.6s 0.5s, visibility 0.6s 0.5s;
+  }
+  #scene.visible { opacity: 1; visibility: visible; }
+
+  /* ── BOOK ── */
+  #book {
+    position: relative;
+    width: calc(var(--page-w) * 2);
+    height: var(--page-h);
+    transform-style: preserve-3d;
+    filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8));
+  }
+
+  /* ── PAGES ── */
+  .page {
+    position: absolute;
+    top: 0;
+    width: var(--page-w);
+    height: var(--page-h);
+    transform-origin: right center;
+    transform-style: preserve-3d;
+    transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    cursor: pointer;
+  }
+
+  /* Stack right side */
+  .page { right: 0; }
+
+  /* All pages start closed (right side) */
+  .page.turned {
+    transform: rotateY(-180deg);
+  }
+
+  .page-front,
+  .page-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .page-back {
+    transform: rotateY(180deg);
+  }
+
+  /* Page texture */
+  .page-front, .page-back {
+    background: var(--paper);
+  }
+  .page-front::after, .page-back::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(0,0,0,0.12) 0%,
+      transparent 8%,
+      transparent 92%,
+      rgba(0,0,0,0.08) 100%
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  /* Spine shadow on right page */
+  .right-half::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0; width: 30px;
+    background: linear-gradient(to right, rgba(0,0,0,0.18), transparent);
+    z-index: 9; pointer-events: none;
+  }
+  /* Spine shadow on left page */
+  .left-half::before {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0; width: 30px;
+    background: linear-gradient(to left, rgba(0,0,0,0.18), transparent);
+    z-index: 9; pointer-events: none;
+  }
+
+  /* ── STATIC HALVES ── */
+  #left-cover, #right-cover {
+    position: absolute;
+    top: 0;
+    width: var(--page-w);
+    height: var(--page-h);
+    overflow: hidden;
+  }
+  #left-cover { left: 0; }
+  #right-cover { right: 0; }
+
+  /* ── IMAGES ── */
+  .page-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── PAGE OVERLAY (caption) ── */
+  .page-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 28px 24px 22px;
+    background: linear-gradient(to top, rgba(10,10,10,0.75) 0%, transparent 100%);
+    z-index: 5;
+  }
+  .caption-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .caption-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  /* ── PLACEHOLDER PAGES (when no img) ── */
+  .page-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+  .page-placeholder::before {
+    content: '';
+    position: absolute; inset: 20px;
+    border: 1px solid var(--accent);
+    opacity: 0.4;
+  }
+  .ph-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 80px;
+    font-weight: 900;
+    color: var(--paper-dark);
+    line-height: 1;
+  }
+  .ph-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    margin-top: 8px;
+  }
+  .ph-line {
+    width: 40px; height: 1px;
+    background: var(--accent);
+    margin: 14px auto;
+    opacity: 0.6;
+  }
+  .ph-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: #888;
+  }
+
+  /* ── COVER ── */
+  .cover-inner {
+    width: 100%; height: 100%;
+    background: var(--ink);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-inner::before {
+    content: '';
+    position: absolute; inset: 18px;
+    border: 1px solid rgba(200,169,110,0.25);
+  }
+  .cover-stripe {
+    position: absolute; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+    top: 50%; transform: translateY(-50%);
+    opacity: 0.15;
+  }
+  .cover-vol {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 5px;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px; font-weight: 900;
+    color: var(--paper); text-align: center;
+    line-height: 0.95; letter-spacing: -1px;
+  }
+  .cover-title em { font-style: italic; color: var(--accent); }
+  .cover-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 16px;
+    color: rgba(244,240,235,0.5);
+    margin-top: 18px;
+  }
+  .cover-year {
+    position: absolute; bottom: 32px; right: 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: rgba(200,169,110,0.5);
+  }
+
+  /* ── BACK COVER ── */
+  .back-cover-inner {
+    width: 100%; height: 100%;
+    background: #0e0e0e;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+  }
+  .back-cover-inner::before {
+    content: '';
+    position: absolute; inset: 18px;
+    border: 1px solid rgba(200,169,110,0.2);
+  }
+  .bc-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 5px;
+    color: var(--accent); text-transform: uppercase;
+  }
+  .bc-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; font-weight: 900;
+    color: var(--paper); opacity: 0.08;
+    margin: 16px 0;
+  }
+  .bc-rule { width: 40px; height: 1px; background: var(--accent); opacity: 0.4; margin: 20px auto; }
+
+  /* ── NAV CONTROLS ── */
+  #nav {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; align-items: center; gap: 24px;
+    z-index: 50;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s 0.8s, visibility 0.4s 0.8s;
+  }
+  #nav.visible { opacity: 1; visibility: visible; }
+
+  .nav-btn {
+    width: 44px; height: 44px;
+    background: none;
+    border: 1px solid rgba(200,169,110,0.4);
+    color: var(--accent);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  }
+  .nav-btn:hover:not(:disabled) {
+    background: rgba(200,169,110,0.1);
+    border-color: var(--accent);
+    transform: scale(1.08);
+  }
+  .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+  #page-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(244,240,235,0.5);
+    min-width: 80px;
+    text-align: center;
+  }
+
+  /* ── CLOSE BTN ── */
+  #close-btn {
+    position: fixed;
+    top: 24px; right: 28px;
+    z-index: 50;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: rgba(200,169,110,0.6);
+    background: none; border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s 0.8s, visibility 0.4s 0.8s, color 0.2s;
+  }
+  #close-btn.visible { opacity: 1; visibility: visible; }
+  #close-btn:hover { color: var(--accent); }
+
+  /* ── PAGE TURN HINT ── */
+  #hint {
+    position: fixed;
+    bottom: 90px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: rgba(244,240,235,0.25);
+    letter-spacing: 1px;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s 1.2s, visibility 0.4s 1.2s;
+    animation: pulse 3s 2s infinite;
+  }
+  #hint.visible { opacity: 1; visibility: visible; }
+  @keyframes pulse {
+    0%,100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* ── KEYBOARD HINT ── */
+  #kbd-hint {
+    position: fixed;
+    top: 28px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: rgba(200,169,110,0.3);
+    z-index: 50;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s 1s, visibility 0.4s 1s;
+    white-space: nowrap;
+  }
+  #kbd-hint.visible { opacity: 1; visibility: visible; }
+
+  /* ── TURNING ANIMATION ── */
+  @keyframes pageTurnShadow {
+    0%   { filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)); }
+    50%  { filter: drop-shadow(0 60px 100px rgba(0,0,0,0.95)) drop-shadow(-20px 0 40px rgba(0,0,0,0.5)); }
+    100% { filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)); }
+  }
+  #book.turning {
+    animation: pageTurnShadow 0.9s ease;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    :root {
+      --page-w: min(46vw, 350px);
+      --page-h: min(63vw, 480px);
+    }
+  }
+  @media (max-width: 600px) {
+    :root {
+      --page-w: 90vw;
+      --page-h: 124vw;
+    }
+    #book { width: var(--page-w); }
+    /* On mobile show only one page */
+    .page { right: 0; width: 100%; }
+    #left-cover, #right-cover { display: none; }
+    #book { transform: none !important; }
+  }
+</style>
 </head>
 <body>
-  <h1>Ya funciona extractos.space 🚀</h1>
+
+<!-- TITLE SCREEN -->
+<div id="title-screen">
+  <p class="title-label">Edición Especial · 2025</p>
+  <h1 class="title-main">THE<br>EDIT</h1>
+  <p class="title-sub">Una colección visual</p>
+  <div class="title-line"></div>
+  <button class="open-btn" onclick="openBook()">Abrir Revista</button>
+</div>
+
+<!-- SCENE -->
+<div id="scene">
+  <div id="book">
+
+    <!-- STATIC LEFT COVER (back cover visible at start) -->
+    <div id="left-cover" class="left-half">
+      <div class="back-cover-inner">
+        <p class="bc-label">The Edit</p>
+        <p class="bc-mark">TE</p>
+        <div class="bc-rule"></div>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
+      </div>
+    </div>
+
+    <!-- STATIC RIGHT COVER (front cover) -->
+    <div id="right-cover" class="right-half">
+      <!-- Se verá la última página de fondo, o la portada inicial -->
+    </div>
+
+    <!-- PAGES (15 images + cover) — rendered right-to-left so first turns first -->
+    <!-- Each .page contains front and back faces -->
+    <!-- Page 8: covers img15/img14 -->
+    <!-- ... -->
+    <!-- Page 1: covers img2/img1 -->
+    <!-- Portada (page 0): front=cover, back=img1 -->
+
+  </div>
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button class="nav-btn" id="btn-prev" onclick="prevPage()" disabled>&#8592;</button>
+  <span id="page-counter">Portada</span>
+  <button class="nav-btn" id="btn-next" onclick="nextPage()">&#8594;</button>
+</div>
+
+<!-- HINTS -->
+<div id="hint">Haz clic en las páginas para pasar</div>
+<div id="kbd-hint">← → para navegar · ESC para cerrar</div>
+
+<!-- CLOSE -->
+<button id="close-btn" onclick="closeBook()">✕ &nbsp;Cerrar</button>
+
+<script>
+// ─────────────────────────────────────────────
+//  CONFIGURACIÓN
+//  Reemplaza las rutas con tus imágenes JPG reales.
+//  Si no tienes imágenes aún, se muestran placeholders elegantes.
+// ─────────────────────────────────────────────
+const IMAGES = [
+  // { src: 'imagen01.jpg', title: 'Apertura', num: '01' },
+  // { src: 'imagen02.jpg', title: 'Naturaleza', num: '02' },
+  // ... agrega tus 15 imágenes aquí
+];
+
+// Títulos de placeholder (se usan si IMAGES está vacío)
+const PLACEHOLDERS = [
+  { title: 'Apertura',      sub: 'Introducción visual' },
+  { title: 'Naturaleza',    sub: 'Estudio de formas' },
+  { title: 'Arquitectura',  sub: 'Espacios y luz' },
+  { title: 'Retrato',       sub: 'La figura humana' },
+  { title: 'Textura',       sub: 'Detalle y materia' },
+  { title: 'Movimiento',    sub: 'Instante capturado' },
+  { title: 'Silencio',      sub: 'Vacío contemplativo' },
+  { title: 'Color',         sub: 'Paleta emocional' },
+  { title: 'Contraste',     sub: 'Luz y sombra' },
+  { title: 'Geometría',     sub: 'Orden y caos' },
+  { title: 'Tiempo',        sub: 'La marca del paso' },
+  { title: 'Escala',        sub: 'Lo grande y lo pequeño' },
+  { title: 'Horizonte',     sub: 'Líneas de fuga' },
+  { title: 'Identidad',     sub: 'El ser y su reflejo' },
+  { title: 'Cierre',        sub: 'Epílogo visual' },
+];
+
+// ─────────────────────────────────────────────
+//  BUILD BOOK
+// ─────────────────────────────────────────────
+const totalImages = 15;
+const book = document.getElementById('book');
+const leftCover = document.getElementById('left-cover');
+const rightCover = document.getElementById('right-cover');
+
+// We need ceil(15/2) = 8 pages
+// Page structure (pages flip from right to left):
+//   page[0]: front=cover, back=img1
+//   page[1]: front=img2, back=img3
+//   ...
+//   page[7]: front=img14, back=img15 (back cover face)
+// Left static: always shows img to the left of current spread
+// Right static: always shows img to the right of current spread
+
+const numPages = Math.ceil((totalImages + 1) / 2); // 8 pages
+
+function getImg(idx) {
+  // idx 0 = cover, 1..15 = images
+  if (idx === 0) return null; // cover
+  const i = idx - 1;
+  if (IMAGES[i] && IMAGES[i].src) return IMAGES[i];
+  return null;
+}
+
+function makePageContent(idx, side) {
+  // idx: 0=cover, 1-15=images
+  const div = document.createElement('div');
+
+  if (idx === 0) {
+    // Front cover
+    div.innerHTML = `
+      <div class="cover-inner">
+        <div class="cover-stripe"></div>
+        <p class="cover-vol">Vol. I &nbsp;·&nbsp; Edición 2025</p>
+        <h2 class="cover-title">THE<br><em>EDIT</em></h2>
+        <p class="cover-sub">Una colección visual</p>
+        <span class="cover-year">© 2025</span>
+      </div>`;
+    return div;
+  }
+
+  if (idx > totalImages) {
+    // Empty / back cover inner
+    div.innerHTML = `
+      <div class="back-cover-inner">
+        <p class="bc-label">The Edit</p>
+        <p class="bc-mark">TE</p>
+        <div class="bc-rule"></div>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
+      </div>`;
+    return div;
+  }
+
+  const imgData = getImg(idx);
+  const ph = PLACEHOLDERS[idx - 1] || { title: `Página ${idx}`, sub: '' };
+  const num = String(idx).padStart(2, '0');
+
+  if (imgData) {
+    div.innerHTML = `
+      <img class="page-img" src="${imgData.src}" alt="${imgData.title || ph.title}" loading="lazy">
+      <div class="page-caption">
+        <span class="caption-num">${num}</span>
+        <span class="caption-title">${imgData.title || ph.title}</span>
+      </div>`;
+  } else {
+    div.innerHTML = `
+      <div class="page-placeholder">
+        <p class="ph-num">${num}</p>
+        <p class="ph-label">Imagen</p>
+        <div class="ph-line"></div>
+        <p class="ph-subtitle">${ph.title}</p>
+        <p style="font-size:11px;color:#aaa;margin-top:6px;font-family:'Space Mono',monospace;letter-spacing:1px;">${ph.sub}</p>
+        <p style="font-size:10px;color:#bbb;margin-top:24px;font-family:'Cormorant Garamond',serif;font-style:italic;">
+          Sustituir con imagen JPG
+        </p>
+      </div>`;
+  }
+  return div;
+}
+
+// Build pages
+const pages = [];
+for (let p = 0; p < numPages; p++) {
+  const frontIdx = p === 0 ? 0 : p * 2 - 1 + 1; // 0, 2, 4, 6, 8, 10, 12, 14
+  const backIdx  = p * 2 + 1;                      // 1, 3, 5, 7, 9, 11, 13, 15
+
+  // Recalculate properly:
+  // page 0: front=cover(0), back=img1
+  // page 1: front=img2, back=img3
+  // page 2: front=img4, back=img5
+  // ...
+  const fIdx = p === 0 ? 0 : (p * 2);
+  const bIdx = p * 2 + 1;
+
+  const pageEl = document.createElement('div');
+  pageEl.className = 'page';
+  pageEl.dataset.index = p;
+
+  const front = document.createElement('div');
+  front.className = 'page-front';
+  const fc = makePageContent(fIdx, 'front');
+  front.appendChild(fc);
+
+  const back = document.createElement('div');
+  back.className = 'page-back';
+  const bc = makePageContent(bIdx, 'back');
+  back.appendChild(bc);
+
+  pageEl.appendChild(front);
+  pageEl.appendChild(back);
+
+  // z-index: top page has highest z
+  pageEl.style.zIndex = numPages - p;
+
+  // Click to turn
+  pageEl.addEventListener('click', function(e) {
+    const rect = pageEl.getBoundingClientRect();
+    // If turned, clicking left half goes back
+    if (pageEl.classList.contains('turned')) {
+      // handled by prevPage
+    } else {
+      nextPage();
+    }
+  });
+
+  book.appendChild(pageEl);
+  pages.push(pageEl);
+}
+
+// Right cover = first page front face (cover)
+rightCover.innerHTML = '';
+const rcInner = makePageContent(0, 'front');
+rightCover.appendChild(rcInner);
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let currentPage = 0; // 0 = cover showing, numPages = all turned
+
+function updateUI() {
+  document.getElementById('btn-prev').disabled = currentPage <= 0;
+  document.getElementById('btn-next').disabled = currentPage >= numPages;
+
+  const counter = document.getElementById('page-counter');
+  if (currentPage === 0) {
+    counter.textContent = 'Portada';
+  } else if (currentPage >= numPages) {
+    counter.textContent = 'Contraportada';
+  } else {
+    const leftImgIdx = currentPage * 2 - 1;
+    const rightImgIdx = currentPage * 2;
+    const l = String(leftImgIdx).padStart(2,'0');
+    const r = rightImgIdx <= totalImages ? String(rightImgIdx).padStart(2,'0') : '—';
+    counter.textContent = `${l} · ${r}`;
+  }
+
+  // Update visible spread
+  updateSpread();
+}
+
+function updateSpread() {
+  // Left static shows back of last turned page
+  // Right static shows front of next unturned page
+  // But we handle this via the page stack — static covers are initial state only
+  // The illusion works because:
+  // - Turned pages stack on left (their backs are visible showing left content)
+  // - Unturned pages stack on right (their fronts show right content)
+}
+
+function triggerTurn() {
+  book.classList.add('turning');
+  setTimeout(() => book.classList.remove('turning'), 900);
+}
+
+function nextPage() {
+  if (currentPage >= numPages) return;
+  triggerTurn();
+  const page = pages[currentPage];
+  if (page) {
+    page.style.zIndex = numPages - currentPage;
+    page.classList.add('turned');
+    // After turn, left cover (static) should show back of turned pages
+    // Update left cover to show the current left page
+    setTimeout(() => {
+      updateLeftCover();
+    }, 450);
+  }
+  currentPage++;
+  updateUI();
+}
+
+function prevPage() {
+  if (currentPage <= 0) return;
+  currentPage--;
+  triggerTurn();
+  const page = pages[currentPage];
+  if (page) {
+    page.classList.remove('turned');
+    page.style.zIndex = numPages - currentPage;
+  }
+  setTimeout(() => updateLeftCover(), 450);
+  updateUI();
+}
+
+function updateLeftCover() {
+  // Left cover shows back of the top turned page, or back cover if none
+  leftCover.innerHTML = '';
+  if (currentPage > 0) {
+    const lastTurned = pages[currentPage - 1];
+    if (lastTurned) {
+      const backClone = lastTurned.querySelector('.page-back').cloneNode(true);
+      backClone.style.transform = '';
+      backClone.style.backfaceVisibility = '';
+      backClone.style.position = '';
+      backClone.style.inset = '';
+      backClone.style.width = '100%';
+      backClone.style.height = '100%';
+      leftCover.appendChild(backClone);
+    }
+  } else {
+    leftCover.innerHTML = `
+      <div class="back-cover-inner">
+        <p class="bc-label">The Edit</p>
+        <p class="bc-mark">TE</p>
+        <div class="bc-rule"></div>
+        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
+      </div>`;
+  }
+}
+
+// ─────────────────────────────────────────────
+//  OPEN / CLOSE
+// ─────────────────────────────────────────────
+function openBook() {
+  document.getElementById('title-screen').classList.add('hidden');
+  document.getElementById('scene').classList.add('visible');
+  document.getElementById('nav').classList.add('visible');
+  document.getElementById('hint').classList.add('visible');
+  document.getElementById('kbd-hint').classList.add('visible');
+  document.getElementById('close-btn').classList.add('visible');
+  updateUI();
+
+  // Auto-hide hint
+  setTimeout(() => {
+    document.getElementById('hint').style.opacity = '0';
+  }, 5000);
+}
+
+function closeBook() {
+  document.getElementById('scene').classList.remove('visible');
+  document.getElementById('nav').classList.remove('visible');
+  document.getElementById('hint').classList.remove('visible');
+  document.getElementById('kbd-hint').classList.remove('visible');
+  document.getElementById('close-btn').classList.remove('visible');
+  // Reset
+  setTimeout(() => {
+    currentPage = 0;
+    pages.forEach(p => p.classList.remove('turned'));
+    updateLeftCover();
+    updateUI();
+    document.getElementById('title-screen').classList.remove('hidden');
+  }, 400);
+}
+
+// ─────────────────────────────────────────────
+//  KEYBOARD
+// ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
+  if (e.key === 'ArrowLeft') prevPage();
+  if (e.key === 'Escape') closeBook();
+});
+
+// ─────────────────────────────────────────────
+//  SWIPE (touch)
+// ─────────────────────────────────────────────
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 40) {
+    if (dx < 0) nextPage();
+    else prevPage();
+  }
+});
+
+// Init
+updateLeftCover();
+updateUI();
+</script>
 </body>
 </html>
