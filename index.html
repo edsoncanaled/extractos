@@ -3,859 +3,587 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Revista Editorial</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Extractos</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  :root {
-    --ink: #0a0a0a;
-    --paper: #f4f0eb;
-    --paper-dark: #e8e2d9;
-    --accent: #c8a96e;
-    --accent-dark: #9a7a44;
-    --red: #b03030;
-    --shadow: rgba(0,0,0,0.35);
-    --page-w: 420px;
-    --page-h: 580px;
-  }
+:root {
+  --black: #0c0b0b;
+  --paper: #eeead f;
+  --paper: #edeade;
+  --dimtype: #aaa;
+  --type: #181818;
+  --W: 530px;
+  --H: 720px;
+}
 
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: var(--ink);
-    font-family: 'Cormorant Garamond', serif;
-    user-select: none;
-  }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--black);
+}
 
-  /* ── BACKGROUND ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 40%, #1a1510 0%, #0a0a0a 100%);
-    z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='%23ffffff08'/%3E%3C/svg%3E");
-    z-index: 0;
-  }
+/* subtle grain */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.045'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 9999;
+  mix-blend-mode: screen; opacity: 0.6;
+}
 
-  /* ── TITLE ── */
-  #title-screen {
-    position: fixed; inset: 0;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    z-index: 100;
-    background: var(--ink);
-    transition: opacity 0.8s ease, visibility 0.8s;
-  }
-  #title-screen.hidden { opacity: 0; visibility: hidden; }
+/* ─── INTRO ─── */
+#intro {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 600;
+  background: var(--black);
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+#intro.gone { opacity: 0; visibility: hidden; pointer-events: none; }
 
-  .title-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 6px;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin-bottom: 28px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.3s forwards;
-  }
-  .title-main {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(48px, 8vw, 96px);
-    font-weight: 900;
-    color: var(--paper);
-    letter-spacing: -2px;
-    line-height: 0.9;
-    text-align: center;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.6s forwards;
-  }
-  .title-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 22px;
-    color: var(--paper-dark);
-    margin-top: 20px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.9s forwards;
-  }
-  .title-line {
-    width: 1px;
-    height: 0;
-    background: var(--accent);
-    margin: 32px auto;
-    animation: growLine 0.6s 1.2s forwards;
-  }
-  .open-btn {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: var(--accent);
-    border: none; cursor: pointer;
-    padding: 14px 40px;
-    opacity: 0;
-    animation: fadeUp 0.8s 1.5s forwards;
-    transition: background 0.3s, transform 0.2s;
-  }
-  .open-btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
+.i-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; font-weight: 300;
+  letter-spacing: 6px; text-transform: uppercase;
+  color: #3a3a3a;
+  opacity: 0; animation: up 0.7s 0.5s forwards;
+}
+.i-title {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(72px, 11vw, 130px);
+  font-weight: 400; font-style: italic;
+  color: #edeade; line-height: 1;
+  margin: 14px 0 6px;
+  letter-spacing: -2px;
+  opacity: 0; animation: up 0.8s 0.8s forwards;
+}
+.i-rule {
+  width: 0; height: 0.5px;
+  background: #2d2d2d; margin: 26px auto;
+  animation: widen 0.5s 1.2s forwards;
+}
+.i-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; font-weight: 300;
+  letter-spacing: 5px; text-transform: uppercase;
+  color: #333;
+  opacity: 0; animation: up 0.6s 1.4s forwards;
+}
+.i-btn {
+  margin-top: 56px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--black); background: #edeade;
+  border: none; cursor: pointer;
+  padding: 12px 38px;
+  opacity: 0; animation: up 0.6s 1.8s forwards;
+  transition: background 0.2s, transform 0.15s;
+}
+.i-btn:hover { background: #ddd9d0; transform: translateY(-1px); }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes growLine {
-    from { height: 0; }
-    to   { height: 60px; }
-  }
+@keyframes up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes widen { from { width: 0; } to { width: 64px; } }
 
-  /* ── SCENE ── */
-  #scene {
-    position: fixed; inset: 0;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 10;
-    perspective: 2400px;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.6s 0.5s, visibility 0.6s 0.5s;
-  }
-  #scene.visible { opacity: 1; visibility: visible; }
+/* ─── STAGE ─── */
+#stage {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  perspective: 3500px;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.7s 0.2s, visibility 0.7s 0.2s;
+}
+#stage.on { opacity: 1; visibility: visible; }
 
-  /* ── BOOK ── */
-  #book {
-    position: relative;
-    width: calc(var(--page-w) * 2);
-    height: var(--page-h);
-    transform-style: preserve-3d;
-    filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8));
-  }
+/* ─── BOOK ─── */
+#book {
+  position: relative;
+  width: calc(var(--W) * 2);
+  height: var(--H);
+  transform-style: preserve-3d;
+  transform: rotateX(4deg) rotateY(-2deg);
+  transition: transform 0.8s ease;
+  filter:
+    drop-shadow(0 80px 140px rgba(0,0,0,0.95))
+    drop-shadow(0 20px 40px rgba(0,0,0,0.7));
+}
+#stage:hover #book { transform: rotateX(1.5deg) rotateY(-0.5deg); }
 
-  /* ── PAGES ── */
-  .page {
-    position: absolute;
-    top: 0;
-    width: var(--page-w);
-    height: var(--page-h);
-    transform-origin: right center;
-    transform-style: preserve-3d;
-    transition: transform 0.9s cubic-bezier(0.645, 0.045, 0.355, 1.000);
-    cursor: pointer;
-  }
+/* spine crease */
+#book::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 0; bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right,
+    rgba(0,0,0,0.5),
+    rgba(0,0,0,0.1) 30%,
+    rgba(0,0,0,0.1) 70%,
+    rgba(0,0,0,0.5));
+  z-index: 200; pointer-events: none;
+}
 
-  /* Stack right side */
-  .page { right: 0; }
+/* ─── STATIC HALVES ─── */
+.s-page {
+  position: absolute; top: 0;
+  width: var(--W); height: var(--H);
+  background: #edeade;
+  overflow: hidden;
+}
+#s-left  { left: 0; }
+#s-right { right: 0; }
 
-  /* All pages start closed (right side) */
-  .page.turned {
-    transform: rotateY(-180deg);
-  }
+/* ─── FLIP PAGES ─── */
+.fp {
+  position: absolute;
+  top: 0; left: var(--W);   /* sits on right half */
+  width: var(--W); height: var(--H);
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transition: transform 1.05s cubic-bezier(0.77,0,0.175,1);
+  cursor: pointer;
+}
+.fp.flipped { transform: rotateY(-180deg); }
 
-  .page-front,
-  .page-back {
-    position: absolute; inset: 0;
-    backface-visibility: hidden;
-    overflow: hidden;
-  }
-  .page-back {
-    transform: rotateY(180deg);
-  }
+.fp-front, .fp-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  background: #edeade;
+  overflow: hidden;
+}
+.fp-back { transform: rotateY(180deg); }
 
-  /* Page texture */
-  .page-front, .page-back {
-    background: var(--paper);
-  }
-  .page-front::after, .page-back::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(0,0,0,0.12) 0%,
-      transparent 8%,
-      transparent 92%,
-      rgba(0,0,0,0.08) 100%
-    );
-    pointer-events: none;
-    z-index: 10;
-  }
+/* edge shadow */
+.fp-front::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0; width: 18px;
+  background: linear-gradient(to right, transparent, rgba(0,0,0,0.06));
+  z-index: 50; pointer-events: none;
+}
+.fp-back::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 18px;
+  background: linear-gradient(to left, transparent, rgba(0,0,0,0.06));
+  z-index: 50; pointer-events: none;
+}
 
-  /* Spine shadow on right page */
-  .right-half::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0; width: 30px;
-    background: linear-gradient(to right, rgba(0,0,0,0.18), transparent);
-    z-index: 9; pointer-events: none;
-  }
-  /* Spine shadow on left page */
-  .left-half::before {
-    content: '';
-    position: absolute;
-    right: 0; top: 0; bottom: 0; width: 30px;
-    background: linear-gradient(to left, rgba(0,0,0,0.18), transparent);
-    z-index: 9; pointer-events: none;
-  }
+/* ─── PAGE INTERIOR ─── */
+.pi {
+  position: relative;
+  width: 100%; height: 100%;
+  background: #edeade;
+}
 
-  /* ── STATIC HALVES ── */
-  #left-cover, #right-cover {
-    position: absolute;
-    top: 0;
-    width: var(--page-w);
-    height: var(--page-h);
-    overflow: hidden;
-  }
-  #left-cover { left: 0; }
-  #right-cover { right: 0; }
+/* Image strip centered, feathered edges */
+.strip {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  left: 0; right: 0;
+  height: 35%;
+  overflow: hidden;
+}
+.strip img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+  filter: grayscale(100%) contrast(1.08) brightness(0.97);
+}
+/* feather fade */
+.strip::before, .strip::after {
+  content: ''; position: absolute;
+  top: 0; bottom: 0; width: 35%; z-index: 2;
+}
+.strip::before { left: 0; background: linear-gradient(to right, #edeade 0%, transparent 100%); }
+.strip::after  { right: 0; background: linear-gradient(to left,  #edeade 0%, transparent 100%); }
 
-  /* ── IMAGES ── */
-  .page-img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
+/* top/bottom fade on strip */
+.strip-inner {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 3;
+  background:
+    linear-gradient(to bottom, #edeade 0%, transparent 18%, transparent 82%, #edeade 100%);
+}
 
-  /* ── PAGE OVERLAY (caption) ── */
-  .page-caption {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    padding: 28px 24px 22px;
-    background: linear-gradient(to top, rgba(10,10,10,0.75) 0%, transparent 100%);
-    z-index: 5;
-  }
-  .caption-num {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--accent);
-    display: block;
-    margin-bottom: 4px;
-  }
-  .caption-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.2;
-  }
+/* placeholder strip */
+.strip-ph {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  left: 8%; right: 8%;
+  height: 33%;
+  border-top: 0.5px dashed #ccc;
+  border-bottom: 0.5px dashed #ccc;
+  display: flex; align-items: center; justify-content: center;
+}
+.strip-ph span {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; letter-spacing: 4px;
+  color: #ccc; text-transform: uppercase;
+}
 
-  /* ── PLACEHOLDER PAGES (when no img) ── */
-  .page-placeholder {
-    width: 100%; height: 100%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: var(--paper);
-    position: relative;
-    overflow: hidden;
-  }
-  .page-placeholder::before {
-    content: '';
-    position: absolute; inset: 20px;
-    border: 1px solid var(--accent);
-    opacity: 0.4;
-  }
-  .ph-num {
-    font-family: 'Playfair Display', serif;
-    font-size: 80px;
-    font-weight: 900;
-    color: var(--paper-dark);
-    line-height: 1;
-  }
-  .ph-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 4px;
-    color: var(--accent);
-    margin-top: 8px;
-  }
-  .ph-line {
-    width: 40px; height: 1px;
-    background: var(--accent);
-    margin: 14px auto;
-    opacity: 0.6;
-  }
-  .ph-subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    color: #888;
-  }
+/* labels */
+.lbl {
+  position: absolute;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.5px; font-weight: 300;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: var(--type);
+  line-height: 1;
+}
+/* centered on page */
+.lbl-cl { top: 50%; left: 42%; transform: translate(-50%,-50%); }
+.lbl-cr { top: 50%; right: 28px; transform: translateY(-50%); }
 
-  /* ── COVER ── */
-  .cover-inner {
-    width: 100%; height: 100%;
-    background: var(--ink);
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .cover-inner::before {
-    content: '';
-    position: absolute; inset: 18px;
-    border: 1px solid rgba(200,169,110,0.25);
-  }
-  .cover-stripe {
-    position: absolute; left: 0; right: 0;
-    height: 2px; background: var(--accent);
-    top: 50%; transform: translateY(-50%);
-    opacity: 0.15;
-  }
-  .cover-vol {
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; letter-spacing: 5px;
-    color: var(--accent); text-transform: uppercase;
-    margin-bottom: 24px;
-  }
-  .cover-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px; font-weight: 900;
-    color: var(--paper); text-align: center;
-    line-height: 0.95; letter-spacing: -1px;
-  }
-  .cover-title em { font-style: italic; color: var(--accent); }
-  .cover-sub {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic; font-size: 16px;
-    color: rgba(244,240,235,0.5);
-    margin-top: 18px;
-  }
-  .cover-year {
-    position: absolute; bottom: 32px; right: 28px;
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; letter-spacing: 3px;
-    color: rgba(200,169,110,0.5);
-  }
+.lbl-num {
+  position: absolute;
+  bottom: 32px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; font-weight: 300;
+  letter-spacing: 2px; color: #bbb;
+}
+.lbl-num.l { left: 30px; }
+.lbl-num.r { right: 30px; }
 
-  /* ── BACK COVER ── */
-  .back-cover-inner {
-    width: 100%; height: 100%;
-    background: #0e0e0e;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    position: relative;
-  }
-  .back-cover-inner::before {
-    content: '';
-    position: absolute; inset: 18px;
-    border: 1px solid rgba(200,169,110,0.2);
-  }
-  .bc-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 8px; letter-spacing: 5px;
-    color: var(--accent); text-transform: uppercase;
-  }
-  .bc-mark {
-    font-family: 'Playfair Display', serif;
-    font-size: 56px; font-weight: 900;
-    color: var(--paper); opacity: 0.08;
-    margin: 16px 0;
-  }
-  .bc-rule { width: 40px; height: 1px; background: var(--accent); opacity: 0.4; margin: 20px auto; }
+/* ─── COVER ─── */
+.cov {
+  width: 100%; height: 100%;
+  background: #edeade;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+}
+.cov::before {
+  content: '';
+  position: absolute; inset: 26px;
+  border: 0.5px solid #d0ccc3;
+}
+.cov-ey {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; font-weight: 300;
+  letter-spacing: 5px; text-transform: uppercase; color: #bbb;
+  margin-bottom: 18px;
+}
+.cov-t {
+  font-family: 'EB Garamond', serif;
+  font-size: 58px; font-weight: 400; font-style: italic;
+  color: var(--type); line-height: 0.95;
+  text-align: center; letter-spacing: -1px;
+}
+.cov-r { width: 32px; height: 0.5px; background: #ccc; margin: 22px auto; }
+.cov-s {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; font-weight: 300;
+  letter-spacing: 5px; text-transform: uppercase; color: #bbb;
+}
+.cov-yr {
+  position: absolute; bottom: 38px; right: 38px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; letter-spacing: 2px; color: #ccc;
+}
 
-  /* ── NAV CONTROLS ── */
-  #nav {
-    position: fixed;
-    bottom: 32px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; align-items: center; gap: 24px;
-    z-index: 50;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.4s 0.8s, visibility 0.4s 0.8s;
-  }
-  #nav.visible { opacity: 1; visibility: visible; }
+/* ─── BACK COVER ─── */
+.bcov {
+  width: 100%; height: 100%;
+  background: #edeade;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.bcov::before { content: ''; position: absolute; inset: 26px; border: 0.5px solid #d8d4cb; }
+.bcov span {
+  font-family: 'EB Garamond', serif;
+  font-style: italic; font-size: 22px; color: #ccc; letter-spacing: 6px;
+}
 
-  .nav-btn {
-    width: 44px; height: 44px;
-    background: none;
-    border: 1px solid rgba(200,169,110,0.4);
-    color: var(--accent);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: background 0.2s, border-color 0.2s, transform 0.15s;
-  }
-  .nav-btn:hover:not(:disabled) {
-    background: rgba(200,169,110,0.1);
-    border-color: var(--accent);
-    transform: scale(1.08);
-  }
-  .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+/* ─── NAV ─── */
+#nav {
+  position: fixed; bottom: 32px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 28px;
+  z-index: 300;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.5s 0.5s, visibility 0.5s 0.5s;
+}
+#nav.on { opacity: 1; visibility: visible; }
 
-  #page-counter {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: rgba(244,240,235,0.5);
-    min-width: 80px;
-    text-align: center;
-  }
+.nb {
+  width: 34px; height: 34px;
+  background: none; border: 0.5px solid #2a2a2a;
+  color: #555; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+  transition: border-color 0.2s, color 0.2s, transform 0.15s;
+}
+.nb:hover:not(:disabled) { border-color: #555; color: #aaa; transform: scale(1.06); }
+.nb:disabled { opacity: 0.12; cursor: not-allowed; }
 
-  /* ── CLOSE BTN ── */
-  #close-btn {
-    position: fixed;
-    top: 24px; right: 28px;
-    z-index: 50;
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; letter-spacing: 3px;
-    color: rgba(200,169,110,0.6);
-    background: none; border: none;
-    cursor: pointer;
-    text-transform: uppercase;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.4s 0.8s, visibility 0.4s 0.8s, color 0.2s;
-  }
-  #close-btn.visible { opacity: 1; visibility: visible; }
-  #close-btn:hover { color: var(--accent); }
+#ctr {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.5px; letter-spacing: 3px;
+  color: #333; min-width: 68px; text-align: center; text-transform: uppercase;
+}
 
-  /* ── PAGE TURN HINT ── */
-  #hint {
-    position: fixed;
-    bottom: 90px; left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 13px;
-    color: rgba(244,240,235,0.25);
-    letter-spacing: 1px;
-    z-index: 50;
-    pointer-events: none;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.4s 1.2s, visibility 0.4s 1.2s;
-    animation: pulse 3s 2s infinite;
-  }
-  #hint.visible { opacity: 1; visibility: visible; }
-  @keyframes pulse {
-    0%,100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
-  }
+#xb {
+  position: fixed; top: 26px; right: 30px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7.5px; letter-spacing: 4px; text-transform: uppercase;
+  color: #2a2a2a; background: none; border: none; cursor: pointer;
+  z-index: 300; opacity: 0; visibility: hidden;
+  transition: opacity 0.4s 0.5s, visibility 0.4s 0.5s, color 0.2s;
+}
+#xb.on { opacity: 1; visibility: visible; }
+#xb:hover { color: #666; }
 
-  /* ── KEYBOARD HINT ── */
-  #kbd-hint {
-    position: fixed;
-    top: 28px; left: 50%;
-    transform: translateX(-50%);
-    font-family: 'Space Mono', monospace;
-    font-size: 9px; letter-spacing: 3px;
-    color: rgba(200,169,110,0.3);
-    z-index: 50;
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.4s 1s, visibility 0.4s 1s;
-    white-space: nowrap;
-  }
-  #kbd-hint.visible { opacity: 1; visibility: visible; }
+#kh {
+  position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px; letter-spacing: 3px; color: #222;
+  text-transform: uppercase; white-space: nowrap; z-index: 300;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.4s 0.7s, visibility 0.4s 0.7s;
+}
+#kh.on { opacity: 1; visibility: visible; }
 
-  /* ── TURNING ANIMATION ── */
-  @keyframes pageTurnShadow {
-    0%   { filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)); }
-    50%  { filter: drop-shadow(0 60px 100px rgba(0,0,0,0.95)) drop-shadow(-20px 0 40px rgba(0,0,0,0.5)); }
-    100% { filter: drop-shadow(0 40px 80px rgba(0,0,0,0.8)); }
-  }
-  #book.turning {
-    animation: pageTurnShadow 0.9s ease;
-  }
-
-  /* Responsive */
-  @media (max-width: 900px) {
-    :root {
-      --page-w: min(46vw, 350px);
-      --page-h: min(63vw, 480px);
-    }
-  }
-  @media (max-width: 600px) {
-    :root {
-      --page-w: 90vw;
-      --page-h: 124vw;
-    }
-    #book { width: var(--page-w); }
-    /* On mobile show only one page */
-    .page { right: 0; width: 100%; }
-    #left-cover, #right-cover { display: none; }
-    #book { transform: none !important; }
-  }
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1150px) {
+  :root { --W: min(44vw, 500px); --H: min(60vw, 680px); }
+}
+@media (max-width: 780px) {
+  :root { --W: 82vw; --H: 112vw; }
+  #book { width: var(--W); }
+  #s-left { display: none; }
+  .fp { left: 0; transform-origin: right center; }
+  .fp.flipped { transform: rotateY(180deg); }
+  #book::after { display: none; }
+}
 </style>
 </head>
 <body>
 
-<!-- TITLE SCREEN -->
-<div id="title-screen">
-  <p class="title-label">Edición Especial · 2025</p>
-  <h1 class="title-main">THE<br>EDIT</h1>
-  <p class="title-sub">Una colección visual</p>
-  <div class="title-line"></div>
-  <button class="open-btn" onclick="openBook()">Abrir Revista</button>
+<div id="intro">
+  <p class="i-label">Edición I &nbsp;·&nbsp; 2025</p>
+  <h1 class="i-title">Extractos</h1>
+  <div class="i-rule"></div>
+  <p class="i-sub">Una colección visual</p>
+  <button class="i-btn" onclick="openBook()">Abrir</button>
 </div>
 
-<!-- SCENE -->
-<div id="scene">
+<div id="stage">
   <div id="book">
-
-    <!-- STATIC LEFT COVER (back cover visible at start) -->
-    <div id="left-cover" class="left-half">
-      <div class="back-cover-inner">
-        <p class="bc-label">The Edit</p>
-        <p class="bc-mark">TE</p>
-        <div class="bc-rule"></div>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
-      </div>
-    </div>
-
-    <!-- STATIC RIGHT COVER (front cover) -->
-    <div id="right-cover" class="right-half">
-      <!-- Se verá la última página de fondo, o la portada inicial -->
-    </div>
-
-    <!-- PAGES (15 images + cover) — rendered right-to-left so first turns first -->
-    <!-- Each .page contains front and back faces -->
-    <!-- Page 8: covers img15/img14 -->
-    <!-- ... -->
-    <!-- Page 1: covers img2/img1 -->
-    <!-- Portada (page 0): front=cover, back=img1 -->
-
+    <div class="s-page" id="s-left"></div>
+    <div class="s-page" id="s-right"></div>
   </div>
 </div>
 
-<!-- NAV -->
 <div id="nav">
-  <button class="nav-btn" id="btn-prev" onclick="prevPage()" disabled>&#8592;</button>
-  <span id="page-counter">Portada</span>
-  <button class="nav-btn" id="btn-next" onclick="nextPage()">&#8594;</button>
+  <button class="nb" id="bp" onclick="prev()" disabled>←</button>
+  <span id="ctr">portada</span>
+  <button class="nb" id="bn" onclick="next()">→</button>
 </div>
-
-<!-- HINTS -->
-<div id="hint">Haz clic en las páginas para pasar</div>
-<div id="kbd-hint">← → para navegar · ESC para cerrar</div>
-
-<!-- CLOSE -->
-<button id="close-btn" onclick="closeBook()">✕ &nbsp;Cerrar</button>
+<button id="xb" onclick="closeBook()">✕ &nbsp;salir</button>
+<div id="kh">← → navegar &nbsp;·&nbsp; esc cerrar</div>
 
 <script>
-// ─────────────────────────────────────────────
-//  CONFIGURACIÓN
-//  Reemplaza las rutas con tus imágenes JPG reales.
-//  Si no tienes imágenes aún, se muestran placeholders elegantes.
-// ─────────────────────────────────────────────
-const IMAGES = [
-  { src: 'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo.JPG',  title: 'Apertura',     num: '01' },
-  { src: 'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/foto2.JPG',  title: 'Naturaleza',   num: '02' },
-  { src: 'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/foto3.JPG',  title: 'Arquitectura', num: '03' },
-  // ... hasta foto15.JPG
+/* ═══════════════════════════════════════════
+   CONFIGURA TUS IMÁGENES AQUÍ
+   Ejemplo con GitHub raw:
+   src: 'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/foto01.JPG'
+
+   "a" = etiqueta izquierda centrada
+   "b" = etiqueta derecha centrada
+═══════════════════════════════════════════ */
+const IMGS = [
+  // { src: 'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/foto01.JPG', a: 'DÍAS',    b: 'POR DELANTE' },
+  // { src: '...foto02.JPG', a: 'LUZ',     b: 'OBLICUA'     },
+  // { src: '...foto03.JPG', a: 'VIENTO',  b: 'SUR'         },
+  // { src: '...foto04.JPG', a: 'MARZO',   b: 'TARDE'       },
+  // { src: '...foto05.JPG', a: 'SILENCIO',b: 'FORMA'       },
+  // { src: '...foto06.JPG', a: 'ARENA',   b: 'BLANCA'      },
+  // { src: '...foto07.JPG', a: 'SOMBRA',  b: 'LARGA'       },
+  // { src: '...foto08.JPG', a: 'RÍO',     b: 'ABAJO'       },
+  // { src: '...foto09.JPG', a: 'TIERRA',  b: 'ADENTRO'     },
+  // { src: '...foto10.JPG', a: 'NOCHE',   b: 'ABIERTA'     },
+  // { src: '...foto11.JPG', a: 'CAMPO',   b: 'VACÍO'       },
+  // { src: '...foto12.JPG', a: 'AGUA',    b: 'QUIETA'      },
+  // { src: '...foto13.JPG', a: 'PIEDRA',  b: 'GRIS'        },
+  // { src: '...foto14.JPG', a: 'CIELO',   b: 'BAJO'        },
+  // { src: '...foto15.JPG', a: 'FIN',     b: 'DE SERIE'    },
 ];
 
-// Títulos de placeholder (se usan si IMAGES está vacío)
-const PLACEHOLDERS = [
-  { title: 'Apertura',      sub: 'Introducción visual' },
-  { title: 'Naturaleza',    sub: 'Estudio de formas' },
-  { title: 'Arquitectura',  sub: 'Espacios y luz' },
-  { title: 'Retrato',       sub: 'La figura humana' },
-  { title: 'Textura',       sub: 'Detalle y materia' },
-  { title: 'Movimiento',    sub: 'Instante capturado' },
-  { title: 'Silencio',      sub: 'Vacío contemplativo' },
-  { title: 'Color',         sub: 'Paleta emocional' },
-  { title: 'Contraste',     sub: 'Luz y sombra' },
-  { title: 'Geometría',     sub: 'Orden y caos' },
-  { title: 'Tiempo',        sub: 'La marca del paso' },
-  { title: 'Escala',        sub: 'Lo grande y lo pequeño' },
-  { title: 'Horizonte',     sub: 'Líneas de fuga' },
-  { title: 'Identidad',     sub: 'El ser y su reflejo' },
-  { title: 'Cierre',        sub: 'Epílogo visual' },
+const PH = [
+  { a:'DÍAS',    b:'POR DELANTE'}, { a:'LUZ',     b:'OBLICUA'   },
+  { a:'VIENTO',  b:'SUR'        }, { a:'MARZO',   b:'TARDE'     },
+  { a:'SILENCIO',b:'FORMA'      }, { a:'ARENA',   b:'BLANCA'    },
+  { a:'SOMBRA',  b:'LARGA'      }, { a:'RÍO',     b:'ABAJO'     },
+  { a:'TIERRA',  b:'ADENTRO'    }, { a:'NOCHE',   b:'ABIERTA'   },
+  { a:'CAMPO',   b:'VACÍO'      }, { a:'AGUA',    b:'QUIETA'    },
+  { a:'PIEDRA',  b:'GRIS'       }, { a:'CIELO',   b:'BAJO'      },
+  { a:'FIN',     b:'DE SERIE'   },
 ];
 
-// ─────────────────────────────────────────────
-//  BUILD BOOK
-// ─────────────────────────────────────────────
-const totalImages = 15;
+const N = 15;
+const FLIP_TOTAL = Math.ceil((N + 1) / 2); // 8
+
+/* ── HTML generators ── */
+function pageHTML(idx) {
+  if (idx === 0) return coverHTML();
+  if (idx > N)   return bcovHTML();
+  const d = IMGS[idx-1] || null;
+  const p = PH[idx-1];
+  const n = String(idx).padStart(2,'0');
+  const a = (d && d.a) || p.a;
+  const b = (d && d.b) || p.b;
+  const isLeft = idx % 2 === 1; // odd = appears on left side after flip
+
+  const imgBlock = d
+    ? `<div class="strip">
+         <img src="${d.src}" alt="${a}">
+         <div class="strip-inner"></div>
+       </div>`
+    : `<div class="strip-ph"><span>imagen ${n}</span></div>`;
+
+  return `<div class="pi">
+    ${imgBlock}
+    <span class="lbl lbl-cl">${a}</span>
+    <span class="lbl lbl-cr">${b}</span>
+    <span class="lbl-num ${isLeft ? 'l':'r'}">${n}</span>
+  </div>`;
+}
+
+function coverHTML() {
+  return `<div class="cov">
+    <p class="cov-ey">Edición I &nbsp;·&nbsp; 2025</p>
+    <h2 class="cov-t">Extractos</h2>
+    <div class="cov-r"></div>
+    <p class="cov-s">Colección visual</p>
+    <span class="cov-yr">© 2025</span>
+  </div>`;
+}
+function bcovHTML() {
+  return `<div class="bcov"><span>extractos</span></div>`;
+}
+
+/* ── Build pages ── */
 const book = document.getElementById('book');
-const leftCover = document.getElementById('left-cover');
-const rightCover = document.getElementById('right-cover');
-
-// We need ceil(15/2) = 8 pages
-// Page structure (pages flip from right to left):
-//   page[0]: front=cover, back=img1
-//   page[1]: front=img2, back=img3
-//   ...
-//   page[7]: front=img14, back=img15 (back cover face)
-// Left static: always shows img to the left of current spread
-// Right static: always shows img to the right of current spread
-
-const numPages = Math.ceil((totalImages + 1) / 2); // 8 pages
-
-function getImg(idx) {
-  // idx 0 = cover, 1..15 = images
-  if (idx === 0) return null; // cover
-  const i = idx - 1;
-  if (IMAGES[i] && IMAGES[i].src) return IMAGES[i];
-  return null;
-}
-
-function makePageContent(idx, side) {
-  // idx: 0=cover, 1-15=images
-  const div = document.createElement('div');
-
-  if (idx === 0) {
-    // Front cover
-    div.innerHTML = `
-      <div class="cover-inner">
-        <div class="cover-stripe"></div>
-        <p class="cover-vol">Vol. I &nbsp;·&nbsp; Edición 2025</p>
-        <h2 class="cover-title">THE<br><em>EDIT</em></h2>
-        <p class="cover-sub">Una colección visual</p>
-        <span class="cover-year">© 2025</span>
-      </div>`;
-    return div;
-  }
-
-  if (idx > totalImages) {
-    // Empty / back cover inner
-    div.innerHTML = `
-      <div class="back-cover-inner">
-        <p class="bc-label">The Edit</p>
-        <p class="bc-mark">TE</p>
-        <div class="bc-rule"></div>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
-      </div>`;
-    return div;
-  }
-
-  const imgData = getImg(idx);
-  const ph = PLACEHOLDERS[idx - 1] || { title: `Página ${idx}`, sub: '' };
-  const num = String(idx).padStart(2, '0');
-
-  if (imgData) {
-    div.innerHTML = `
-      <img class="page-img" src="${imgData.src}" alt="${imgData.title || ph.title}" loading="lazy">
-      <div class="page-caption">
-        <span class="caption-num">${num}</span>
-        <span class="caption-title">${imgData.title || ph.title}</span>
-      </div>`;
-  } else {
-    div.innerHTML = `
-      <div class="page-placeholder">
-        <p class="ph-num">${num}</p>
-        <p class="ph-label">Imagen</p>
-        <div class="ph-line"></div>
-        <p class="ph-subtitle">${ph.title}</p>
-        <p style="font-size:11px;color:#aaa;margin-top:6px;font-family:'Space Mono',monospace;letter-spacing:1px;">${ph.sub}</p>
-        <p style="font-size:10px;color:#bbb;margin-top:24px;font-family:'Cormorant Garamond',serif;font-style:italic;">
-          Sustituir con imagen JPG
-        </p>
-      </div>`;
-  }
-  return div;
-}
-
-// Build pages
+const sL = document.getElementById('s-left');
+const sR = document.getElementById('s-right');
 const pages = [];
-for (let p = 0; p < numPages; p++) {
-  const frontIdx = p === 0 ? 0 : p * 2 - 1 + 1; // 0, 2, 4, 6, 8, 10, 12, 14
-  const backIdx  = p * 2 + 1;                      // 1, 3, 5, 7, 9, 11, 13, 15
 
-  // Recalculate properly:
-  // page 0: front=cover(0), back=img1
-  // page 1: front=img2, back=img3
-  // page 2: front=img4, back=img5
-  // ...
-  const fIdx = p === 0 ? 0 : (p * 2);
-  const bIdx = p * 2 + 1;
+for (let i = 0; i < FLIP_TOTAL; i++) {
+  const fIdx = i === 0 ? 0 : i * 2;   // front face index: 0,2,4,6,8,10,12,14
+  const bIdx = i * 2 + 1;              // back face index:  1,3,5,7,9,11,13,15
 
-  const pageEl = document.createElement('div');
-  pageEl.className = 'page';
-  pageEl.dataset.index = p;
+  const pg = document.createElement('div');
+  pg.className = 'fp';
+  pg.style.zIndex = FLIP_TOTAL - i;
 
   const front = document.createElement('div');
-  front.className = 'page-front';
-  const fc = makePageContent(fIdx, 'front');
-  front.appendChild(fc);
+  front.className = 'fp-front';
+  front.innerHTML = pageHTML(fIdx);
 
   const back = document.createElement('div');
-  back.className = 'page-back';
-  const bc = makePageContent(bIdx, 'back');
-  back.appendChild(bc);
+  back.className = 'fp-back';
+  back.innerHTML = pageHTML(bIdx);
 
-  pageEl.appendChild(front);
-  pageEl.appendChild(back);
+  pg.appendChild(front);
+  pg.appendChild(back);
+  book.appendChild(pg);
+  pages.push({ el: pg, fIdx, bIdx });
 
-  // z-index: top page has highest z
-  pageEl.style.zIndex = numPages - p;
-
-  // Click to turn
-  pageEl.addEventListener('click', function(e) {
-    const rect = pageEl.getBoundingClientRect();
-    // If turned, clicking left half goes back
-    if (pageEl.classList.contains('turned')) {
-      // handled by prevPage
-    } else {
-      nextPage();
-    }
-  });
-
-  book.appendChild(pageEl);
-  pages.push(pageEl);
+  pg.addEventListener('click', () => { if (!pg.classList.contains('flipped')) next(); });
 }
 
-// Right cover = first page front face (cover)
-rightCover.innerHTML = '';
-const rcInner = makePageContent(0, 'front');
-rightCover.appendChild(rcInner);
-
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
-let currentPage = 0; // 0 = cover showing, numPages = all turned
-
-function updateUI() {
-  document.getElementById('btn-prev').disabled = currentPage <= 0;
-  document.getElementById('btn-next').disabled = currentPage >= numPages;
-
-  const counter = document.getElementById('page-counter');
-  if (currentPage === 0) {
-    counter.textContent = 'Portada';
-  } else if (currentPage >= numPages) {
-    counter.textContent = 'Contraportada';
+/* ── Static refresh ── */
+function setStatic() {
+  // Left static: back of last flipped, else back cover
+  if (cur === 0) {
+    sL.innerHTML = bcovHTML();
   } else {
-    const leftImgIdx = currentPage * 2 - 1;
-    const rightImgIdx = currentPage * 2;
-    const l = String(leftImgIdx).padStart(2,'0');
-    const r = rightImgIdx <= totalImages ? String(rightImgIdx).padStart(2,'0') : '—';
-    counter.textContent = `${l} · ${r}`;
+    sL.innerHTML = pages[cur-1].el.querySelector('.fp-back').innerHTML;
   }
-
-  // Update visible spread
-  updateSpread();
-}
-
-function updateSpread() {
-  // Left static shows back of last turned page
-  // Right static shows front of next unturned page
-  // But we handle this via the page stack — static covers are initial state only
-  // The illusion works because:
-  // - Turned pages stack on left (their backs are visible showing left content)
-  // - Unturned pages stack on right (their fronts show right content)
-}
-
-function triggerTurn() {
-  book.classList.add('turning');
-  setTimeout(() => book.classList.remove('turning'), 900);
-}
-
-function nextPage() {
-  if (currentPage >= numPages) return;
-  triggerTurn();
-  const page = pages[currentPage];
-  if (page) {
-    page.style.zIndex = numPages - currentPage;
-    page.classList.add('turned');
-    // After turn, left cover (static) should show back of turned pages
-    // Update left cover to show the current left page
-    setTimeout(() => {
-      updateLeftCover();
-    }, 450);
-  }
-  currentPage++;
-  updateUI();
-}
-
-function prevPage() {
-  if (currentPage <= 0) return;
-  currentPage--;
-  triggerTurn();
-  const page = pages[currentPage];
-  if (page) {
-    page.classList.remove('turned');
-    page.style.zIndex = numPages - currentPage;
-  }
-  setTimeout(() => updateLeftCover(), 450);
-  updateUI();
-}
-
-function updateLeftCover() {
-  // Left cover shows back of the top turned page, or back cover if none
-  leftCover.innerHTML = '';
-  if (currentPage > 0) {
-    const lastTurned = pages[currentPage - 1];
-    if (lastTurned) {
-      const backClone = lastTurned.querySelector('.page-back').cloneNode(true);
-      backClone.style.transform = '';
-      backClone.style.backfaceVisibility = '';
-      backClone.style.position = '';
-      backClone.style.inset = '';
-      backClone.style.width = '100%';
-      backClone.style.height = '100%';
-      leftCover.appendChild(backClone);
-    }
+  // Right static: front of current top page, else back cover
+  if (cur < FLIP_TOTAL) {
+    sR.innerHTML = pages[cur].el.querySelector('.fp-front').innerHTML;
   } else {
-    leftCover.innerHTML = `
-      <div class="back-cover-inner">
-        <p class="bc-label">The Edit</p>
-        <p class="bc-mark">TE</p>
-        <div class="bc-rule"></div>
-        <p style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:rgba(244,240,235,0.3);">Fin de la edición</p>
-      </div>`;
+    sR.innerHTML = bcovHTML();
   }
 }
 
-// ─────────────────────────────────────────────
-//  OPEN / CLOSE
-// ─────────────────────────────────────────────
+/* ── Nav refresh ── */
+function setNav() {
+  document.getElementById('bp').disabled = cur <= 0;
+  document.getElementById('bn').disabled = cur >= FLIP_TOTAL;
+  const el = document.getElementById('ctr');
+  if (cur === 0) { el.textContent = 'portada'; return; }
+  if (cur >= FLIP_TOTAL) { el.textContent = 'fin'; return; }
+  const l = cur * 2 - 1;
+  const r = cur * 2;
+  el.textContent = `${String(l).padStart(2,'0')} · ${r <= N ? String(r).padStart(2,'0') : '—'}`;
+}
+
+/* ── State ── */
+let cur = 0;
+
+function next() {
+  if (cur >= FLIP_TOTAL) return;
+  const pg = pages[cur].el;
+  pg.classList.add('flipped');
+  cur++;
+  setNav();
+  setTimeout(setStatic, 520);
+}
+
+function prev() {
+  if (cur <= 0) return;
+  cur--;
+  const pg = pages[cur].el;
+  pg.classList.remove('flipped');
+  setNav();
+  setTimeout(setStatic, 1050);
+}
+
+/* ── Open/Close ── */
 function openBook() {
-  document.getElementById('title-screen').classList.add('hidden');
-  document.getElementById('scene').classList.add('visible');
-  document.getElementById('nav').classList.add('visible');
-  document.getElementById('hint').classList.add('visible');
-  document.getElementById('kbd-hint').classList.add('visible');
-  document.getElementById('close-btn').classList.add('visible');
-  updateUI();
-
-  // Auto-hide hint
-  setTimeout(() => {
-    document.getElementById('hint').style.opacity = '0';
-  }, 5000);
+  document.getElementById('intro').classList.add('gone');
+  document.getElementById('stage').classList.add('on');
+  document.getElementById('nav').classList.add('on');
+  document.getElementById('xb').classList.add('on');
+  document.getElementById('kh').classList.add('on');
+  setStatic(); setNav();
 }
 
 function closeBook() {
-  document.getElementById('scene').classList.remove('visible');
-  document.getElementById('nav').classList.remove('visible');
-  document.getElementById('hint').classList.remove('visible');
-  document.getElementById('kbd-hint').classList.remove('visible');
-  document.getElementById('close-btn').classList.remove('visible');
-  // Reset
+  ['stage','nav','xb','kh'].forEach(id => document.getElementById(id).classList.remove('on'));
   setTimeout(() => {
-    currentPage = 0;
-    pages.forEach(p => p.classList.remove('turned'));
-    updateLeftCover();
-    updateUI();
-    document.getElementById('title-screen').classList.remove('hidden');
-  }, 400);
+    cur = 0;
+    pages.forEach(p => p.el.classList.remove('flipped'));
+    setStatic(); setNav();
+    document.getElementById('intro').classList.remove('gone');
+  }, 600);
 }
 
-// ─────────────────────────────────────────────
-//  KEYBOARD
-// ─────────────────────────────────────────────
+/* ── Keyboard ── */
 document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ') nextPage();
-  if (e.key === 'ArrowLeft') prevPage();
-  if (e.key === 'Escape') closeBook();
+  if (e.key==='ArrowRight'||e.key===' ') next();
+  else if (e.key==='ArrowLeft') prev();
+  else if (e.key==='Escape') closeBook();
 });
 
-// ─────────────────────────────────────────────
-//  SWIPE (touch)
-// ─────────────────────────────────────────────
-let touchStartX = 0;
-document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+/* ── Touch ── */
+let tx = 0;
+document.addEventListener('touchstart', e => tx = e.touches[0].clientX, {passive:true});
 document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(dx) > 40) {
-    if (dx < 0) nextPage();
-    else prevPage();
-  }
-});
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 45) dx < 0 ? next() : prev();
+}, {passive:true});
 
-// Init
-updateLeftCover();
-updateUI();
+setStatic(); setNav();
 </script>
 </body>
 </html>
