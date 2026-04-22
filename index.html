@@ -221,9 +221,6 @@ body::after{
 <button id="xb" onclick="closeBook()">✕ &nbsp;salir</button>
 <div id="kh">← → navegar · esc cerrar</div>
 
-<!-- SOLO TE PONGO EL SCRIPT COMPLETO CORREGIDO -->
-<!-- TU HTML Y CSS SE QUEDAN IGUAL -->
-
 <script>
 /* ═══════════════════════════════════════════════════════
    CONFIGURA TUS IMÁGENES
@@ -284,16 +281,16 @@ function layoutBook(){
   wrap.style.position='relative';
   wrap.style.transform='perspective(3000px) rotateX(3deg) rotateY(-1.5deg)';
   wrap.style.filter='drop-shadow(0 70px 130px rgba(0,0,0,.95)) drop-shadow(0 20px 40px rgba(0,0,0,.7))';
-  pgL.style.cssText=width:${PW}px;height:${PH_px}px;left:0;
-  pgR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;
+  pgL.style.cssText=`width:${PW}px;height:${PH_px}px;left:0`;
+  pgR.style.cssText=`width:${PW}px;height:${PH_px}px;right:0`;
   // Canvas at physical pixels for sharpness
   canvas.width=PW*2*DPR;
   canvas.height=PH_px*DPR;
   canvas.style.width=PW*2+'px';
   canvas.style.height=PH_px+'px';
   ctx.scale(DPR,DPR);
-  hotR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;
-  hotL.style.cssText=width:${PW}px;height:${PH_px}px;left:0;
+  hotR.style.cssText=`width:${PW}px;height:${PH_px}px;right:0`;
+  hotL.style.cssText=`width:${PW}px;height:${PH_px}px;left:0`;
 }
 layoutBook();
 
@@ -338,7 +335,7 @@ function coverHTML(){
   </div>`;
 }
 function bcovHTML(){
-  return <div class="bcov"><span>extractos</span></div>;
+  return `<div class="bcov"><span>extractos</span></div>`;
 }
 
 /* ── OFFSCREEN PAGE POOL ── */
@@ -371,7 +368,7 @@ function loadSrc(src, cb){
 }
 
 function buildPageCanvas(idx, cb){
-  const key=${idx}_${PW}_${PH_px};
+  const key=`${idx}_${PW}_${PH_px}`;
   if(imgCache[key]){cb(imgCache[key]);return;}
 
   const oc=document.createElement('canvas');
@@ -402,10 +399,10 @@ function buildPageCanvas(idx, cb){
       oc2.fillStyle=grad; oc2.fillRect(0,0,PW,PH_px);
       // title text
       oc2.fillStyle='rgba(237,234,222,0.9)';
-      oc2.font=italic ${Math.round(PW*0.11)}px "EB Garamond",Georgia,serif;
+      oc2.font=`italic ${Math.round(PW*0.11)}px "EB Garamond",Georgia,serif`;
       oc2.textAlign='center';
       oc2.fillText('Extractos',PW/2,PH_px*0.48);
-      oc2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+      oc2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
       oc2.fillStyle='rgba(237,234,222,0.5)';
       oc2.fillText('EDICIÓN I  ·  2025',PW/2,PH_px*0.38);
       // thin border
@@ -423,7 +420,7 @@ function buildPageCanvas(idx, cb){
     oc2.fillRect(0,0,PW,PH_px);
     oc2.strokeStyle='#d8d4cb'; oc2.lineWidth=0.5;
     oc2.strokeRect(22,22,PW-44,PH_px-44);
-    oc2.font=italic ${Math.round(PW*0.055)}px "EB Garamond",Georgia,serif;
+    oc2.font=`italic ${Math.round(PW*0.055)}px "EB Garamond",Georgia,serif`;
     oc2.fillStyle='#ccc'; oc2.textAlign='center';
     oc2.fillText('extractos',PW/2,PH_px/2+8);
     finish();
@@ -461,7 +458,7 @@ function buildPageCanvas(idx, cb){
 
 function drawPageText(c2,a,b,n,isL,col,dimCol){
   const fs=Math.round(PW*0.026);
-  c2.font=300 ${fs}px "IBM Plex Mono",monospace;
+  c2.font=`300 ${fs}px "IBM Plex Mono",monospace`;
   c2.letterSpacing='2px';
   c2.fillStyle=col;
   c2.textAlign='left';
@@ -469,7 +466,7 @@ function drawPageText(c2,a,b,n,isL,col,dimCol){
   c2.textAlign='right';
   c2.fillText(b, PW-28, PH_px-46);
   // page number
-  c2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+  c2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
   c2.fillStyle=dimCol;
   if(isL){ c2.textAlign='left'; c2.fillText(n,28,PH_px-28); }
   else   { c2.textAlign='right'; c2.fillText(n,PW-28,PH_px-28); }
@@ -481,9 +478,9 @@ function drawPlaceholder(c2,n,a,b,isL){
   c2.strokeStyle='#ccc'; c2.lineWidth=0.5;
   c2.beginPath(); c2.moveTo(PW*0.08,my-h/2); c2.lineTo(PW*0.92,my-h/2); c2.stroke();
   c2.beginPath(); c2.moveTo(PW*0.08,my+h/2); c2.lineTo(PW*0.92,my+h/2); c2.stroke();
-  c2.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+  c2.font=`300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace`;
   c2.fillStyle='#ccc'; c2.textAlign='center';
-  c2.fillText(imagen ${n},PW/2,my+6);
+  c2.fillText(`imagen ${n}`,PW/2,my+6);
   drawPageText(c2,a,b,n,isL,'#333','#bbb');
 }
 
@@ -612,7 +609,7 @@ function drawFlip(progress, frontImg, backImg){
       // Shadow — darker near fold edge (foldX)
       const shd=ctx.createLinearGradient(foldX-w*0.3,0,foldX,0);
       shd.addColorStop(0,'rgba(0,0,0,0)');
-      shd.addColorStop(1,rgba(0,0,0,${0.35*shadowIntensity}));
+      shd.addColorStop(1,`rgba(0,0,0,${0.35*shadowIntensity})`);
       ctx.fillStyle=shd;
       ctx.fillRect(spine,0,w,H);
       ctx.restore();
@@ -644,7 +641,7 @@ function drawFlip(progress, frontImg, backImg){
       // Shadow from spine leftward while page lifts
       const sw = W * shadowIntensity * 0.5;
       const shd=ctx.createLinearGradient(spine,0,spine-sw,0);
-      shd.addColorStop(0,rgba(0,0,0,${0.22*shadowIntensity}));
+      shd.addColorStop(0,`rgba(0,0,0,${0.22*shadowIntensity})`);
       shd.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=shd;
       ctx.fillRect(spine-sw,0,sw,H);
@@ -652,7 +649,7 @@ function drawFlip(progress, frontImg, backImg){
       // Shadow cast onto right page as page lands
       const sw = W * (1-shadowIntensity) * 0.4;
       const shd=ctx.createLinearGradient(spine,0,spine+sw+20,0);
-      shd.addColorStop(0,rgba(0,0,0,${0.18*(1-progress)*2}));
+      shd.addColorStop(0,`rgba(0,0,0,${0.18*(1-progress)*2})`);
       shd.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=shd;
       ctx.fillRect(spine,0,sw+20,H);
@@ -751,7 +748,7 @@ function setNav(){
   if(cur===0){el.textContent='portada';return}
   if(cur>=FTOTAL){el.textContent='fin';return}
   const l=cur*2-1, r=cur*2;
-  el.textContent=${String(l).padStart(2,'0')} · ${r<=N?String(r).padStart(2,'0'):'—'};
+  el.textContent=`${String(l).padStart(2,'0')} · ${r<=N?String(r).padStart(2,'0'):'—'}`;
 }
 
 /* ── OPEN / CLOSE ── */
