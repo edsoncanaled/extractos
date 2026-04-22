@@ -110,22 +110,8 @@ body::after{
 }
 
 /* ── PAGE INTERIOR STYLES ── */
-.pi{position:relative;width:100%;height:100%;background:#edeade}
-.strip{
-  position:absolute;top:50%;transform:translateY(-50%);
-  left:0;right:0;height:35%;overflow:hidden;
-}
-.strip img{width:100%;height:100%;object-fit:cover;display:block;
-  filter:grayscale(100%) contrast(1.08) brightness(.97)}
-.strip::before,.strip::after{
-  content:'';position:absolute;top:0;bottom:0;width:35%;z-index:2;
-}
-.strip::before{left:0;background:linear-gradient(to right,#edeade,transparent)}
-.strip::after{right:0;background:linear-gradient(to left,#edeade,transparent)}
-.strip-inner{
-  position:absolute;inset:0;pointer-events:none;z-index:3;
-  background:linear-gradient(to bottom,#edeade 0%,transparent 18%,transparent 82%,#edeade 100%);
-}
+.pi{position:relative;width:100%;height:100%;background:#edeade;overflow:hidden}
+.full-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .strip-ph{
   position:absolute;top:50%;transform:translateY(-50%);
   left:8%;right:8%;height:33%;
@@ -135,11 +121,14 @@ body::after{
 .strip-ph span{font-size:7px;letter-spacing:4px;color:#ccc;text-transform:uppercase}
 .lbl{
   position:absolute;font-size:7.5px;font-weight:300;
-  letter-spacing:3px;text-transform:uppercase;color:var(--type);
+  letter-spacing:3px;text-transform:uppercase;
+  color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.55);z-index:5;
 }
-.lbl-cl{top:50%;left:42%;transform:translate(-50%,-50%)}
-.lbl-cr{top:50%;right:28px;transform:translateY(-50%)}
-.lbl-num{position:absolute;bottom:32px;font-size:7px;font-weight:300;letter-spacing:2px;color:#bbb}
+.pi.no-img .lbl{color:var(--type);text-shadow:none}
+.lbl-cl{bottom:48px;left:30px}
+.lbl-cr{bottom:48px;right:30px}
+.lbl-num{position:absolute;bottom:30px;font-size:7px;font-weight:300;letter-spacing:2px;color:rgba(255,255,255,.4);z-index:5}
+.pi.no-img .lbl-num{color:#bbb}
 .lbl-num.l{left:30px}.lbl-num.r{right:30px}
 .cov{
   width:100%;height:100%;background:#edeade;
@@ -310,19 +299,27 @@ function pageHTML(idx){
   const n=String(idx).padStart(2,'0');
   const a=(d&&d.a)||p.a, b=(d&&d.b)||p.b;
   const isL=idx%2===1;
-  const imgBlock=d
-    ?`<div class="strip"><img src="${d.src}" alt="${a}" loading="lazy"><div class="strip-inner"></div></div>`
-    :`<div class="strip-ph"><span>imagen ${n}</span></div>`;
-  return `<div class="pi">${imgBlock}
-    <span class="lbl lbl-cl">${a}</span>
-    <span class="lbl lbl-cr">${b}</span>
-    <span class="lbl-num ${isL?'l':'r'}">${n}</span></div>`;
+  if(d){
+    return `<div class="pi">
+      <img class="full-img" src="${d.src}" alt="${a}" loading="lazy">
+      <span class="lbl lbl-cl">${a}</span>
+      <span class="lbl lbl-cr">${b}</span>
+      <span class="lbl-num ${isL?'l':'r'}">${n}</span>
+    </div>`;
+  } else {
+    return `<div class="pi no-img">
+      <div class="strip-ph"><span>imagen ${n}</span></div>
+      <span class="lbl lbl-cl">${a}</span>
+      <span class="lbl lbl-cr">${b}</span>
+      <span class="lbl-num ${isL?'l':'r'}">${n}</span>
+    </div>`;
+  }
 }
 
 function coverHTML(){
   return `<div class="cov" style="position:relative;overflow:hidden;">
     <img src="https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG"
-      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(100%) contrast(1.05) brightness(.88)">
+      style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:none">
     <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(237,234,222,.15) 0%,transparent 25%,transparent 75%,rgba(237,234,222,.2) 100%);z-index:1;pointer-events:none"></div>
     <div style="position:absolute;inset:26px;border:.5px solid rgba(237,234,222,.22);z-index:2;pointer-events:none"></div>
     <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%">
