@@ -1,32 +1,4 @@
-[6:05 PM, 4/22/2026] Ed: <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Extractos</title>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&family=IBM+Plex+Mono:wght@300;400&display=swap" rel="stylesheet">
-<style>
-,::before,*::after{margin:0;padding:0;box-sizing:border-box}
-
-:root{
-  --black:#0c0b0b;
-  --paper:#edeade;
-  --type:#181818;
-}
-
-html,body{
-  width:100%;height:100%;
-  overflow:hidden;
-  background:var(--black);
-  font-family:'IBM Plex Mono',monospace;
-}
-
-/* grain overlay */
-body::after{
-  content:'';position:fixed;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='…
-[6:05 PM, 4/22/2026] Ed: tengo que mejorar la calidad de las fotos y las animaciones de pasar las paginas, ayuda con eso3, ademas tambien tengo que adaptarlo al formato de telefono movil. que verdaderamente se vea como un libro. que en el medio se vea la hundidura.
-[6:10 PM, 4/22/2026] Ed: <!DOCTYPE html>
+<!DOCTYPE html>
 
 <html lang="es">
 <head>
@@ -38,11 +10,10 @@ body::after{
 ,::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-–black:#0a0908;
+–black:#09080a;
 –paper:#edeade;
-–paper-dark:#e0dcd0;
+–paper2:#e5e1d6;
 –type:#181818;
-–spine-shadow:rgba(0,0,0,0.55);
 }
 
 html,body{
@@ -50,140 +21,161 @@ width:100%;height:100%;
 overflow:hidden;
 background:var(–black);
 font-family:‘IBM Plex Mono’,monospace;
+-webkit-user-select:none;user-select:none;
 touch-action:none;
--webkit-user-select:none;
-user-select:none;
 }
 
-/* grain */
 body::after{
 content:’’;position:fixed;inset:0;
-background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 200 200’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.9’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.045’/%3E%3C/svg%3E”);
-pointer-events:none;z-index:9999;mix-blend-mode:screen;opacity:.45;
+background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 256 256’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.85’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’ opacity=‘0.05’/%3E%3C/svg%3E”);
+pointer-events:none;z-index:9999;mix-blend-mode:screen;opacity:.4;
 }
 
 /* ─── INTRO ─── */
 #intro{
-position:fixed;inset:0;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
+position:fixed;inset:0;display:flex;flex-direction:column;
+align-items:center;justify-content:center;
 z-index:600;background:var(–black);
 transition:opacity .9s,visibility .9s;
 }
 #intro.gone{opacity:0;visibility:hidden;pointer-events:none}
-
 .i-ey{font-size:8px;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#3a3a3a;
 opacity:0;animation:up .7s .4s forwards}
-.i-title{
-font-family:‘EB Garamond’,serif;
-font-size:clamp(64px,10vw,118px);font-weight:400;font-style:italic;
-color:#edeade;line-height:1;margin:12px 0 4px;letter-spacing:-2px;
-opacity:0;animation:up .8s .7s forwards}
+.i-title{font-family:‘EB Garamond’,serif;font-size:clamp(64px,10vw,118px);
+font-weight:400;font-style:italic;color:#edeade;line-height:1;margin:12px 0 4px;
+letter-spacing:-2px;opacity:0;animation:up .8s .7s forwards}
 .i-rule{width:0;height:.5px;background:#2a2a2a;margin:24px auto;animation:widen .5s 1.1s forwards}
 .i-sub{font-size:8px;font-weight:300;letter-spacing:5px;text-transform:uppercase;color:#333;
 opacity:0;animation:up .6s 1.3s forwards}
-.i-btn{
-margin-top:48px;font-size:8px;letter-spacing:5px;text-transform:uppercase;
+.i-btn{margin-top:48px;font-size:8px;letter-spacing:5px;text-transform:uppercase;
 color:var(–black);background:#edeade;border:none;cursor:pointer;padding:13px 40px;
 opacity:0;animation:up .6s 1.7s forwards;transition:background .2s,transform .15s}
 .i-btn:hover{background:#ddd9d0;transform:translateY(-1px)}
-.i-btn:active{transform:translateY(0)}
-
-@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.i-btn:active{transform:translateY(1px)}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes widen{from{width:0}to{width:56px}}
 
 /* ─── STAGE ─── */
-#stage{
-position:fixed;inset:0;
-display:flex;align-items:center;justify-content:center;
-opacity:0;visibility:hidden;
-transition:opacity .8s .1s,visibility .8s .1s;
-}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+opacity:0;visibility:hidden;transition:opacity .8s .1s,visibility .8s .1s}
 #stage.on{opacity:1;visibility:visible}
 
-/* ambient floor light */
-#stage::before{
-content:’’;position:absolute;
-bottom:0;left:50%;transform:translateX(-50%);
-width:60%;height:30%;
-background:radial-gradient(ellipse at 50% 100%, rgba(237,234,222,0.04) 0%, transparent 70%);
-pointer-events:none;
-}
+/* ─── BOOK ─── */
+#book-wrap{position:relative;will-change:transform}
+#pg-left,#pg-right{position:absolute;top:0;overflow:hidden;background:var(–paper)}
+#pg-left {left:0; border-radius:2px 0 0 2px}
+#pg-right{right:0;border-radius:0 2px 2px 0}
+#flip-canvas{position:absolute;top:0;left:0;pointer-events:none;z-index:10}
+#spine{position:absolute;top:0;z-index:20;pointer-events:none}
+#hot-right,#hot-left{position:absolute;top:0;z-index:30}
+#hot-right{right:0;cursor:e-resize}
+#hot-left {left:0; cursor:w-resize}
 
-/* ─── BOOK WRAPPER ─── */
-#book-wrap{
-position:relative;
-will-change:transform;
+/* ─── PAGE STYLES ─── */
+.pi{position:relative;width:100%;height:100%;background:var(–paper);overflow:hidden}
+.pi img.full{
+position:absolute;inset:0;width:100%;height:100%;
+object-fit:cover;object-position:center;display:block
 }
+.pi .ov{
+position:absolute;inset:0;
+background:linear-gradient(to bottom,
+rgba(0,0,0,0) 50%, rgba(0,0,0,0.58) 100%);
+z-index:2
+}
+.lbl-a,.lbl-b{
+position:absolute;bottom:44px;
+font-size:7.5px;font-weight:300;letter-spacing:3px;text-transform:uppercase;
+color:rgba(255,255,255,0.88);z-index:3
+}
+.lbl-a{left:26px}.lbl-b{right:26px}
+.lbl-n{
+position:absolute;bottom:26px;
+font-size:7px;font-weight:300;letter-spacing:2px;
+color:rgba(255,255,255,0.35);z-index:3
+}
+.lbl-n.l{left:26px}.lbl-n.r{right:26px}
+.pi.no-img .lbl-a,.pi.no-img .lbl-b{color:#444}
+.pi.no-img .lbl-n{color:#bbb}
+.pi.no-img::before{
+content:’’;position:absolute;inset:0;
+background-image:repeating-linear-gradient(
+to bottom,transparent,transparent 27px,rgba(0,0,0,0.035) 27px,rgba(0,0,0,0.035) 28px);
+z-index:0
+}
+.pi .strip{
+position:absolute;top:50%;transform:translateY(-50%);
+left:10%;right:10%;height:30%;
+border-top:.5px dashed #d0ccc3;border-bottom:.5px dashed #d0ccc3;
+display:flex;align-items:center;justify-content:center;z-index:1
+}
+.pi .strip span{font-size:7px;letter-spacing:4px;color:#ccc;text-transform:uppercase}
 
-/* The two static page halves */
-#pg-left,#pg-right{
-position:absolute;top:0;
-overflow:hidden;
-background:var(–paper);
+/* Cover */
+.cov{position:relative;width:100%;height:100%;overflow:hidden}
+.cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cov .ov2{
+position:absolute;inset:0;
+background:linear-gradient(to bottom,
+rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 38%,
+rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.42) 100%);
+z-index:1
 }
-#pg-left{left:0; border-radius:2px 0 0 2px;}
-#pg-right{right:0; border-radius:0 2px 2px 0;}
+.cov .frame{position:absolute;inset:18px;border:.5px solid rgba(237,234,222,0.20);z-index:2}
+.cov .txt{position:absolute;inset:0;z-index:3;
+display:flex;flex-direction:column;align-items:center;justify-content:center}
+.c-ey{font-size:7.5px;font-weight:300;letter-spacing:5px;text-transform:uppercase;
+color:rgba(237,234,222,0.50);margin-bottom:16px}
+.c-t{font-family:‘EB Garamond’,serif;font-weight:400;font-style:italic;
+font-size:clamp(36px,7.5vw,62px);color:rgba(237,234,222,0.93);
+text-shadow:0 2px 24px rgba(0,0,0,0.55);line-height:1;letter-spacing:-1px}
+.c-r{width:28px;height:.5px;background:rgba(237,234,222,0.28);margin:16px auto}
+.c-s{font-size:7px;font-weight:300;letter-spacing:5px;text-transform:uppercase;
+color:rgba(237,234,222,0.32)}
+.c-yr{position:absolute;bottom:30px;right:30px;font-size:7px;
+letter-spacing:2px;color:rgba(237,234,222,0.25);z-index:3}
 
-/* Canvas: flipping page on top */
-#flip-canvas{
-position:absolute;top:0;left:0;
-pointer-events:none;
-z-index:10;
+/* Back cover */
+.bcov{width:100%;height:100%;background:var(–paper);
+display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.bcov::before{content:’’;position:absolute;inset:20px;border:.5px solid #d0ccc3;z-index:1}
+.bcov::after{
+content:’’;position:absolute;inset:0;
+background-image:repeating-linear-gradient(
+to bottom,transparent,transparent 27px,rgba(0,0,0,0.03) 27px,rgba(0,0,0,0.03) 28px)
 }
-
-/* Spine overlay — always renders over both pages */
-#spine-overlay{
-position:absolute;top:0;z-index:15;
-pointer-events:none;
-}
-
-/* Clickable hotspots */
-#hot-right,#hot-left{
-position:absolute;top:0;z-index:20;
-}
-#hot-right{right:0;cursor:e-resize;}
-#hot-left{left:0;cursor:w-resize;}
+.bcov span{font-family:‘EB Garamond’,serif;font-style:italic;
+font-size:22px;color:#ccc;letter-spacing:6px;z-index:2;position:relative}
 
 /* ─── NAV ─── */
-#nav{
-position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+#nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
 display:flex;align-items:center;gap:24px;z-index:300;
-opacity:0;visibility:hidden;transition:opacity .5s .4s,visibility .5s .4s;
-}
+opacity:0;visibility:hidden;transition:opacity .5s .4s,visibility .5s .4s}
 #nav.on{opacity:1;visibility:visible}
-.nb{
-width:34px;height:34px;background:none;border:.5px solid #252525;
+.nb{width:36px;height:36px;background:none;border:.5px solid #222;
 color:#444;cursor:pointer;display:flex;align-items:center;justify-content:center;
-font-size:14px;transition:border-color .2s,color .2s,transform .12s;
--webkit-tap-highlight-color:transparent;
-}
+font-size:14px;transition:border-color .2s,color .2s,transform .1s;
+-webkit-tap-highlight-color:transparent}
 .nb:hover:not(:disabled){border-color:#555;color:#aaa;transform:scale(1.06)}
-.nb:active:not(:disabled){transform:scale(0.96)}
+.nb:active:not(:disabled){transform:scale(0.92)}
 .nb:disabled{opacity:.1;cursor:not-allowed}
-#ctr{font-size:7px;letter-spacing:3px;color:#2d2d2d;min-width:72px;text-align:center;text-transform:uppercase}
-
-#xb{
-position:fixed;top:24px;right:26px;font-size:7px;letter-spacing:4px;
-text-transform:uppercase;color:#252525;background:none;border:none;cursor:pointer;
-z-index:300;opacity:0;visibility:hidden;transition:opacity .4s .4s,visibility .4s .4s,color .2s;
--webkit-tap-highlight-color:transparent;
-padding:8px;
-}
+#ctr{font-size:7px;letter-spacing:3px;color:#2a2a2a;
+min-width:72px;text-align:center;text-transform:uppercase}
+#xb{position:fixed;top:24px;right:26px;font-size:7px;letter-spacing:4px;
+text-transform:uppercase;color:#222;background:none;border:none;cursor:pointer;
+z-index:300;opacity:0;visibility:hidden;
+transition:opacity .4s .4s,visibility .4s .4s,color .2s;
+-webkit-tap-highlight-color:transparent;padding:8px}
 #xb.on{opacity:1;visibility:visible}
 #xb:hover{color:#777}
-
-#kh{
-position:fixed;top:28px;left:50%;transform:translateX(-50%);
+#kh{position:fixed;top:28px;left:50%;transform:translateX(-50%);
 font-size:6.5px;letter-spacing:3px;color:#1e1e1e;text-transform:uppercase;
 white-space:nowrap;z-index:300;opacity:0;visibility:hidden;
-transition:opacity .4s .6s,visibility .4s .6s;
-}
+transition:opacity .4s .6s,visibility .4s .6s}
 #kh.on{opacity:1;visibility:visible}
 
-/* MOBILE: hide left page, make right full */
-@media(max-width:700px){
-#pg-left{display:none!important}
-#hot-left{display:none!important}
+@media(max-width:680px){
+#pg-left,#hot-left{display:none!important}
 #kh{display:none}
 }
 </style>
@@ -204,7 +196,7 @@ transition:opacity .4s .6s,visibility .4s .6s;
     <div id="pg-left"></div>
     <div id="pg-right"></div>
     <canvas id="flip-canvas"></canvas>
-    <canvas id="spine-overlay"></canvas>
+    <div id="spine"></div>
     <div id="hot-right"></div>
     <div id="hot-left"></div>
   </div>
@@ -219,18 +211,16 @@ transition:opacity .4s .6s,visibility .4s .6s;
 <div id="kh">← → navegar · esc cerrar</div>
 
 <script>
-/* ═══════════════════════════════════════
-   IMÁGENES — rellena tus URLs
-═══════════════════════════════════════ */
+/* ══════════════════════════════════
+   TUS IMÁGENES — rellena tus URLs
+══════════════════════════════════ */
 const IMGS = [
   { src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG', a:'DÍAS',    b:'POR DELANTE'},
   { src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo3.png', a:'LUZ',     b:'OBLICUA'   },
-  // { src:'...', a:'VIENTO',   b:'SUR'       },
-  // { src:'...', a:'MARZO',    b:'TARDE'     },
-  // { src:'...', a:'SILENCIO', b:'FORMA'     },
+  // { src:'URL_AQUI', a:'VIENTO', b:'SUR' },
 ];
 
-const PLACEHOLDERS=[
+const PH=[
   {a:'DÍAS',b:'POR DELANTE'},{a:'LUZ',b:'OBLICUA'},{a:'VIENTO',b:'SUR'},
   {a:'MARZO',b:'TARDE'},{a:'SILENCIO',b:'FORMA'},{a:'ARENA',b:'BLANCA'},
   {a:'SOMBRA',b:'LARGA'},{a:'RÍO',b:'ABAJO'},{a:'TIERRA',b:'ADENTRO'},
@@ -238,624 +228,413 @@ const PLACEHOLDERS=[
   {a:'PIEDRA',b:'GRIS'},{a:'CIELO',b:'BAJO'},{a:'FIN',b:'DE SERIE'},
 ];
 
-const N = 15;
+const N=15;
+const FTOTAL=Math.ceil((N+1)/2);
 
-/* ── MOBILE DETECTION ── */
-const isMobile = () => window.innerWidth <= 700;
-
-/* ── SIZES ── */
-let PW, PH_px; // single page dimensions
+/* ── HELPERS ── */
+const mob=()=>window.innerWidth<=680;
+let PW,PH_px;
 
 function calcSize(){
-  const vw = window.innerWidth, vh = window.innerHeight;
-  if(isMobile()){
-    // Full screen single page on mobile
-    PH_px = vh * 0.80;
-    PW    = Math.min(PH_px * 0.72, vw * 0.88);
+  const vw=window.innerWidth,vh=window.innerHeight;
+  if(mob()){
+    PH_px=vh*0.80;
+    PW=Math.min(PH_px*0.72,vw*0.88);
   } else {
-    PH_px = Math.min(vh * 0.82, 720);
-    PW    = Math.min(PH_px * 0.72, vw * 0.42, 510);
+    PH_px=Math.min(vh*0.82,720);
+    PW=Math.min(PH_px*0.72,vw*0.42,510);
   }
 }
 calcSize();
 
-/* ── ELEMENTS ── */
-const wrap       = document.getElementById('book-wrap');
-const pgL        = document.getElementById('pg-left');
-const pgR        = document.getElementById('pg-right');
-const flipCanvas = document.getElementById('flip-canvas');
-const spineEl    = document.getElementById('spine-overlay');
-const ctx        = flipCanvas.getContext('2d');
-const sctx       = spineEl.getContext('2d');
-const hotR       = document.getElementById('hot-right');
-const hotL       = document.getElementById('hot-left');
-
-const DPR = Math.min(window.devicePixelRatio || 1, 2.5);
+const wrap   =document.getElementById('book-wrap');
+const pgL    =document.getElementById('pg-left');
+const pgR    =document.getElementById('pg-right');
+const fc     =document.getElementById('flip-canvas');
+const spineEl=document.getElementById('spine');
+const hotR   =document.getElementById('hot-right');
+const hotL   =document.getElementById('hot-left');
+const ctx    =fc.getContext('2d');
+const DPR    =Math.min(window.devicePixelRatio||1,2);
 
 /* ── LAYOUT ── */
 function layoutBook(){
-  const mobile = isMobile();
-  const totalW = mobile ? PW : PW * 2;
+  const m=mob();
+  const W=m?PW:PW*2;
 
-  wrap.style.width    = totalW + 'px';
-  wrap.style.height   = PH_px  + 'px';
-  wrap.style.position = 'relative';
+  wrap.style.cssText=`width:${W}px;height:${PH_px}px;position:relative;
+    transform:${m
+      ?'perspective(1800px) rotateX(2deg)'
+      :'perspective(3200px) rotateX(2.5deg) rotateY(-1deg)'};
+    filter:drop-shadow(0 ${m?50:80}px ${m?100:140}px rgba(0,0,0,.95))
+           drop-shadow(0 ${m?14:22}px ${m?30:50}px rgba(0,0,0,.65));
+    will-change:transform`;
 
-  if(mobile){
-    wrap.style.transform = 'perspective(1800px) rotateX(2deg)';
-    wrap.style.filter    = 'drop-shadow(0 50px 100px rgba(0,0,0,.9)) drop-shadow(0 12px 30px rgba(0,0,0,.6))';
-  } else {
-    wrap.style.transform = 'perspective(3200px) rotateX(2.5deg) rotateY(-1deg)';
-    wrap.style.filter    = 'drop-shadow(0 80px 140px rgba(0,0,0,.95)) drop-shadow(0 20px 50px rgba(0,0,0,.65))';
-  }
+  pgL.style.cssText=width:${PW}px;height:${PH_px}px;left:0;position:absolute;top:0;display:${m?'none':'block'};
+  pgR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;position:absolute;top:0;
 
-  pgL.style.cssText = width:${PW}px;height:${PH_px}px;left:0;display:${mobile?'none':'block'};
-  pgR.style.cssText = width:${PW}px;height:${PH_px}px;right:0;
+  fc.width =Math.round(W*DPR);
+  fc.height=Math.round(PH_px*DPR);
+  fc.style.cssText=width:${W}px;height:${PH_px}px;position:absolute;top:0;left:0;pointer-events:none;z-index:10;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
 
-  // Main flip canvas = full book width
-  flipCanvas.width  = Math.round(totalW * DPR);
-  flipCanvas.height = Math.round(PH_px  * DPR);
-  flipCanvas.style.width  = totalW + 'px';
-  flipCanvas.style.height = PH_px  + 'px';
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  // Spine groove — CSS gradient, no canvas needed
+  const sw=m?0:16;
+  spineEl.style.cssText=`position:absolute;top:0;left:${m?-200:PW-sw/2}px;
+    width:${sw}px;height:${PH_px}px;z-index:20;pointer-events:none;
+    background:${m?'none':`linear-gradient(to right,
+      rgba(0,0,0,0.18) 0%,
+      rgba(0,0,0,0.60) 30%,
+      rgba(0,0,0,0.75) 50%,
+      rgba(0,0,0,0.60) 70%,
+      rgba(0,0,0,0.18) 100%)};
 
-  // Spine canvas — narrow strip in center (desktop only)
-  const spineW = mobile ? 0 : 14;
-  spineEl.width  = Math.round(spineW * DPR);
-  spineEl.height = Math.round(PH_px  * DPR);
-  spineEl.style.width   = spineW + 'px';
-  spineEl.style.height  = PH_px  + 'px';
-  spineEl.style.left    = mobile ? '-100px' : PW - spineW/2 + 'px';
-  spineEl.style.top     = '0';
-  sctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-  drawSpine(spineW);
-
-  hotR.style.cssText = width:${mobile?PW:PW}px;height:${PH_px}px;right:0;
-  hotL.style.cssText = width:${mobile?0:PW}px;height:${PH_px}px;left:0;
+  hotR.style.cssText=width:${PW}px;height:${PH_px}px;right:0;position:absolute;top:0;z-index:30;cursor:e-resize;
+  hotL.style.cssText=width:${m?0:PW}px;height:${PH_px}px;left:0;position:absolute;top:0;z-index:30;cursor:w-resize;
 }
 layoutBook();
 
-/* ── DRAW SPINE (permanent center groove) ── */
-function drawSpine(w){
-  if(w <= 0) return;
-  sctx.clearRect(0, 0, w, PH_px);
-  // Dark groove
-  const g = sctx.createLinearGradient(0, 0, w, 0);
-  g.addColorStop(0,   'rgba(0,0,0,0.45)');
-  g.addColorStop(0.35,'rgba(0,0,0,0.65)');
-  g.addColorStop(0.5, 'rgba(0,0,0,0.72)');
-  g.addColorStop(0.65,'rgba(0,0,0,0.60)');
-  g.addColorStop(1,   'rgba(0,0,0,0.30)');
-  sctx.fillStyle = g;
-  sctx.fillRect(0, 0, w, PH_px);
-  // Thin specular highlight on left edge
-  const spec = sctx.createLinearGradient(0, 0, 3, 0);
-  spec.addColorStop(0, 'rgba(255,255,255,0.12)');
-  spec.addColorStop(1, 'rgba(255,255,255,0)');
-  sctx.fillStyle = spec;
-  sctx.fillRect(0, 0, 3, PH_px);
-}
-
-/* ── IMAGE CACHE ── */
-const srcImgCache = {};
-
-function loadSrc(src, cb){
-  if(!src){ cb(null); return; }
-  if(srcImgCache[src]){
-    srcImgCache[src] === 'loading'
-      ? setTimeout(() => loadSrc(src, cb), 30)
-      : cb(srcImgCache[src] === 'error' ? null : srcImgCache[src]);
-    return;
+/* ── PAGE HTML GENERATORS ── */
+function makeHTML(idx){
+  if(idx===0) return coverHTML();
+  if(idx>N)   return backcoverHTML();
+  const d=IMGS[idx-1]||null;
+  const ph=PH[idx-1];
+  const n=String(idx).padStart(2,'0');
+  const a=(d&&d.a)||ph.a,b=(d&&d.b)||ph.b;
+  const isL=idx%2===1;
+  if(d&&d.src){
+    return `<div class="pi">
+      <img class="full" src="${d.src}" alt="${a}" loading="lazy" decoding="async">
+      <div class="ov"></div>
+      <span class="lbl-a">${a}</span><span class="lbl-b">${b}</span>
+      <span class="lbl-n ${isL?'l':'r'}">${n}</span>
+    </div>`;
   }
-  srcImgCache[src] = 'loading';
-  const im = new Image();
-  im.crossOrigin = 'anonymous';
-  im.onload  = () => { srcImgCache[src] = im; cb(im); };
-  im.onerror = () => { srcImgCache[src] = 'error'; cb(null); };
-  // Force high quality decode
-  if(im.decode) im.decode().catch(()=>{});
-  im.src = src;
+  return `<div class="pi no-img">
+    <div class="strip"><span>imagen ${n}</span></div>
+    <span class="lbl-a">${a}</span><span class="lbl-b">${b}</span>
+    <span class="lbl-n ${isL?'l':'r'}">${n}</span>
+  </div>`;
 }
 
-const pageCanvasCache = {};
-
-function buildPageCanvas(idx, cb){
-  const key = ${idx}_${Math.round(PW)}_${Math.round(PH_px)};
-  if(pageCanvasCache[key]){ cb(pageCanvasCache[key]); return; }
-
-  const oc  = document.createElement('canvas');
-  oc.width  = Math.round(PW * DPR);
-  oc.height = Math.round(PH_px * DPR);
-  const c   = oc.getContext('2d');
-  c.setTransform(DPR, 0, 0, DPR, 0, 0);
-
-  // Enable image smoothing for quality
-  c.imageSmoothingEnabled = true;
-  c.imageSmoothingQuality = 'high';
-
-  function cache(){ pageCanvasCache[key] = oc; cb(oc); }
-
-  /* Paper base */
-  c.fillStyle = '#edeade';
-  c.fillRect(0, 0, PW, PH_px);
-
-  /* ── COVER ── */
-  if(idx === 0){
-    const src = IMGS[0] ? IMGS[0].src : null;
-    loadSrc(src, im => {
-      if(im) drawFullImg(c, im);
-      // darkening overlay
-      const ov = c.createLinearGradient(0, 0, 0, PH_px);
-      ov.addColorStop(0,   'rgba(0,0,0,0.20)');
-      ov.addColorStop(0.45,'rgba(0,0,0,0.05)');
-      ov.addColorStop(1,   'rgba(0,0,0,0.38)');
-      c.fillStyle = ov; c.fillRect(0, 0, PW, PH_px);
-      // border
-      c.strokeStyle='rgba(237,234,222,0.18)'; c.lineWidth=0.6;
-      c.strokeRect(18,18,PW-36,PH_px-36);
-      // eyebrow
-      c.font=300 ${r(PW,0.022)}px "IBM Plex Mono",monospace;
-      c.fillStyle='rgba(237,234,222,0.48)'; c.textAlign='center';
-      c.fillText('EDICIÓN I  ·  2025', PW/2, PH_px*0.365);
-      // title
-      c.font=italic ${r(PW,0.115)}px "EB Garamond",Georgia,serif;
-      c.fillStyle='rgba(237,234,222,0.93)';
-      c.shadowColor='rgba(0,0,0,0.6)'; c.shadowBlur=24;
-      c.fillText('Extractos', PW/2, PH_px*0.5);
-      c.shadowBlur=0;
-      // sub
-      c.font=300 ${r(PW,0.020)}px "IBM Plex Mono",monospace;
-      c.fillStyle='rgba(237,234,222,0.32)';
-      c.fillText('COLECCIÓN VISUAL', PW/2, PH_px*0.585);
-      cache();
-    });
-    return;
-  }
-
-  /* ── BACK COVER ── */
-  if(idx > N){
-    c.fillStyle='#edeade'; c.fillRect(0,0,PW,PH_px);
-    // subtle paper lines
-    c.strokeStyle='rgba(0,0,0,0.03)'; c.lineWidth=0.5;
-    for(let y=40; y<PH_px; y+=28){ c.beginPath(); c.moveTo(0,y); c.lineTo(PW,y); c.stroke(); }
-    // border
-    c.strokeStyle='#d0ccc3'; c.lineWidth=0.6;
-    c.strokeRect(20,20,PW-40,PH_px-40);
-    c.font=italic ${r(PW,0.055)}px "EB Garamond",Georgia,serif;
-    c.fillStyle='#ccc'; c.textAlign='center';
-    c.fillText('extractos', PW/2, PH_px/2+8);
-    cache();
-    return;
-  }
-
-  /* ── CONTENT PAGE ── */
-  const d   = IMGS[idx-1]  || null;
-  const ph  = PLACEHOLDERS[idx-1];
-  const n   = String(idx).padStart(2,'0');
-  const a   = (d&&d.a) || ph.a;
-  const b   = (d&&d.b) || ph.b;
-  const isL = idx % 2 === 1;
-
-  function withImg(im){
-    if(im){
-      // High-quality full bleed image
-      drawFullImg(c, im);
-      // Vignette for text legibility
-      const vig = c.createRadialGradient(PW/2,PH_px*0.5,PH_px*0.1, PW/2,PH_px*0.5,PH_px*0.85);
-      vig.addColorStop(0,'rgba(0,0,0,0)');
-      vig.addColorStop(1,'rgba(0,0,0,0.38)');
-      c.fillStyle=vig; c.fillRect(0,0,PW,PH_px);
-      // bottom gradient for labels
-      const bot = c.createLinearGradient(0, PH_px*0.68, 0, PH_px);
-      bot.addColorStop(0,'rgba(0,0,0,0)');
-      bot.addColorStop(1,'rgba(0,0,0,0.52)');
-      c.fillStyle=bot; c.fillRect(0,0,PW,PH_px);
-      drawLabels(c, a, b, n, isL, 'rgba(255,255,255,0.88)', 'rgba(255,255,255,0.35)');
-    } else {
-      drawPlaceholder(c, n, a, b, isL);
-    }
-    cache();
-  }
-
-  if(d && d.src) loadSrc(d.src, withImg);
-  else { drawPlaceholder(c,n,a,b,isL); cache(); }
+function coverHTML(){
+  const s=IMGS[0]?IMGS[0].src:null;
+  return `<div class="cov">
+    ${s?<img src="${s}" alt="portada" loading="eager" decoding="async">:'<div style="position:absolute;inset:0;background:#b0aca3"></div>'}
+    <div class="ov2"></div><div class="frame"></div>
+    <div class="txt">
+      <p class="c-ey">Edición I · 2025</p>
+      <h2 class="c-t">Extractos</h2>
+      <div class="c-r"></div>
+      <p class="c-s">Colección Visual</p>
+    </div>
+    <span class="c-yr">© 2025</span>
+  </div>`;
+}
+function backcoverHTML(){
+  return <div class="bcov"><span>extractos</span></div>;
 }
 
-/* ── UTILS ── */
-function r(base, pct){ return Math.round(base * pct); }
+/* ── STATIC PAGE RENDERING (pure DOM, no CORS issues) ── */
+function setPage(el,idx){ el.innerHTML=makeHTML(Math.max(0,Math.min(idx,N+1))); }
 
-function drawFullImg(c2, im){
-  // Cover the page entirely, centered (object-fit:cover equivalent)
-  const imgAR = im.naturalWidth / im.naturalHeight;
-  const pageAR = PW / PH_px;
-  let sw, sh, sx, sy;
-  if(imgAR > pageAR){
-    sh = im.naturalHeight;
-    sw = sh * pageAR;
-    sx = (im.naturalWidth - sw) / 2; sy = 0;
-  } else {
-    sw = im.naturalWidth;
-    sh = sw / pageAR;
-    sx = 0; sy = (im.naturalHeight - sh) / 2;
-  }
-  c2.imageSmoothingEnabled = true;
-  c2.imageSmoothingQuality = 'high';
-  c2.drawImage(im, sx, sy, sw, sh, 0, 0, PW, PH_px);
-}
-
-function drawLabels(c2, a, b, n, isL, col, dimCol){
-  const fs = r(PW, 0.026);
-  c2.font = 300 ${fs}px "IBM Plex Mono",monospace;
-  c2.fillStyle = col;
-  c2.textAlign='left';  c2.fillText(a, 26, PH_px - 44);
-  c2.textAlign='right'; c2.fillText(b, PW-26, PH_px - 44);
-  c2.font=300 ${r(PW,0.021)}px "IBM Plex Mono",monospace;
-  c2.fillStyle = dimCol;
-  if(isL){ c2.textAlign='left';  c2.fillText(n, 26,    PH_px-26); }
-  else   { c2.textAlign='right'; c2.fillText(n, PW-26, PH_px-26); }
-}
-
-function drawPlaceholder(c2, n, a, b, isL){
-  c2.fillStyle='#edeade'; c2.fillRect(0,0,PW,PH_px);
-  // paper lines
-  c2.strokeStyle='rgba(0,0,0,0.04)'; c2.lineWidth=0.5;
-  for(let y=40; y<PH_px; y+=28){ c2.beginPath(); c2.moveTo(0,y); c2.lineTo(PW,y); c2.stroke(); }
-  const my=PH_px/2, h=PH_px*0.28;
-  c2.strokeStyle='#d8d4cb'; c2.lineWidth=0.5;
-  c2.beginPath(); c2.moveTo(PW*0.1,my-h/2); c2.lineTo(PW*0.9,my-h/2); c2.stroke();
-  c2.beginPath(); c2.moveTo(PW*0.1,my+h/2); c2.lineTo(PW*0.9,my+h/2); c2.stroke();
-  c2.font=300 ${r(PW,0.022)}px "IBM Plex Mono",monospace;
-  c2.fillStyle='#ccc'; c2.textAlign='center';
-  c2.fillText(imagen ${n}, PW/2, my+6);
-  drawLabels(c2, a, b, n, isL, '#333', '#bbb');
-}
-
-/* ─────────────────────────────────────
-   STATIC PAGE RENDERER (DOM → innerHTML)
-   Uses a hidden iframe-like approach:
-   just draw pages inline in #pg-left/right
-───────────────────────────────────── */
-function renderStaticPage(container, idx){
-  // We draw into a temp canvas and set as background image
-  buildPageCanvas(idx, oc => {
-    container.style.backgroundImage = url(${oc.toDataURL('image/jpeg', 0.95)});
-    container.style.backgroundSize  = 'cover';
-    container.innerHTML = '';
-  });
-}
-
-/* ── STATE ── */
-const FTOTAL = Math.ceil((N + 1) / 2);
-let cur = 0;
-let flipping = false;
-let flipDir  = 1;
-let flipRAF  = null;
-let flipStart = null;
-let flipFrontImg = null;
-let flipBackImg  = null;
-
-/* ── REFRESH STATIC HALVES ── */
 function refreshStatic(){
-  const mobile = isMobile();
-  if(cur === 0){
-    if(!mobile) renderStaticPage(pgL, N+1); // back cover hidden behind
-    renderStaticPage(pgR, 0);               // front cover on right
-  } else if(cur >= FTOTAL){
-    if(!mobile) renderStaticPage(pgL, N);
-    renderStaticPage(pgR, N+1);
+  const m=mob();
+  if(cur===0){
+    if(!m) setPage(pgL,N+1);
+    setPage(pgR,0);
+  } else if(cur>=FTOTAL){
+    if(!m) setPage(pgL,N);
+    setPage(pgR,N+1);
   } else {
-    const leftIdx  = (cur - 1) * 2 + 1; // odd pages (left)
-    const rightIdx = cur * 2;            // even pages (right)
-    if(!mobile) renderStaticPage(pgL, Math.min(leftIdx, N+1));
-    renderStaticPage(pgR, Math.min(rightIdx, N+1));
+    const li=(cur-1)*2+1, ri=cur*2;
+    if(!m) setPage(pgL,Math.min(li,N+1));
+    setPage(pgR,Math.min(ri,N+1));
   }
 }
 
-function clearFlipCanvas(){
-  ctx.clearRect(0, 0, PW * 2, PH_px);
-}
-
-/* ═══════════════════════════════════════════════════════
-   REALISTIC PAGE CURL ENGINE v2
+/* ══════════════════════════════════════════════════════════
+   CANVAS FLIP ENGINE
    
-   Uses a true cylindrical projection:
-   - The page wraps around an invisible cylinder
-   - Points near the fold are pushed "up" (toward viewer)
-   - We render front face + back face with correct perspective
-   - Soft shadow and specular highlight at the fold crease
-═══════════════════════════════════════════════════════ */
+   The canvas draws ONLY during the flip animation.
+   We draw a solid-color representation of each page
+   (matching paper tone) with labels on canvas.
+   Static pages (with real images) show before/after in DOM.
+   
+   This avoids ALL CORS/taint issues completely.
+══════════════════════════════════════════════════════════ */
 
-function drawRealisticFlip(progress, frontImg, backImg){
-  clearFlipCanvas();
+function clearFC(){ ctx.clearRect(0,0,PW*2,PH_px); }
 
-  const mobile = isMobile();
-  const W  = PW;
-  const H  = PH_px;
-  const SPINE = mobile ? 0 : W; // x of spine in canvas space
+// Build an offscreen canvas representing a page (no images — paper color only)
+function buildOC(idx){
+  const oc=document.createElement('canvas');
+  oc.width=Math.round(PW*DPR);
+  oc.height=Math.round(PH_px*DPR);
+  const c=oc.getContext('2d');
+  c.setTransform(DPR,0,0,DPR,0,0);
 
-  // Angle of the page fold: 0 = flat right, PI = flat left
-  const angle = progress * Math.PI;
-  const cosA  = Math.cos(angle);
-  const sinA  = Math.abs(Math.sin(angle)); // for shadow
-
-  // Where is the fold in canvas X?
-  // progress=0 → foldX = SPINE + W (right edge)
-  // progress=0.5→ foldX = SPINE (spine)
-  // progress=1 → foldX = SPINE - W (left edge)
-  const foldX = SPINE + W * cosA;
-
-  // ── PAGE PAPER TEXTURE (simulate pages stacked) ──
-  if(!mobile){
-    // Stack edge — tiny pages peeking
-    for(let i=3; i>0; i--){
-      const off = i * 1.2;
-      ctx.fillStyle = rgba(220,216,208,${0.6/i});
-      ctx.fillRect(SPINE - off, 0, off, H);
-    }
+  function lines(){
+    c.strokeStyle='rgba(0,0,0,0.04)';c.lineWidth=0.5;
+    for(let y=40;y<PH_px;y+=28){c.beginPath();c.moveTo(0,y);c.lineTo(PW,y);c.stroke();}
   }
+
+  if(idx===0){
+    // Cover — dark tone (image behind in DOM)
+    c.fillStyle='#b5b0a6'; c.fillRect(0,0,PW,PH_px);
+    const ov=c.createLinearGradient(0,0,0,PH_px);
+    ov.addColorStop(0,'rgba(0,0,0,0.22)');ov.addColorStop(0.5,'rgba(0,0,0,0.04)');ov.addColorStop(1,'rgba(0,0,0,0.40)');
+    c.fillStyle=ov;c.fillRect(0,0,PW,PH_px);
+    c.strokeStyle='rgba(237,234,222,0.18)';c.lineWidth=0.6;c.strokeRect(18,18,PW-36,PH_px-36);
+    c.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+    c.fillStyle='rgba(237,234,222,0.46)';c.textAlign='center';
+    c.fillText('EDICIÓN I  ·  2025',PW/2,PH_px*0.365);
+    c.font=italic ${Math.round(PW*0.115)}px "EB Garamond",Georgia,serif;
+    c.fillStyle='rgba(237,234,222,0.92)';c.shadowColor='rgba(0,0,0,0.5)';c.shadowBlur=20;
+    c.fillText('Extractos',PW/2,PH_px*0.5);c.shadowBlur=0;
+    c.font=300 ${Math.round(PW*0.020)}px "IBM Plex Mono",monospace;
+    c.fillStyle='rgba(237,234,222,0.30)';
+    c.fillText('COLECCIÓN VISUAL',PW/2,PH_px*0.59);
+  } else if(idx>N){
+    c.fillStyle='#edeade';c.fillRect(0,0,PW,PH_px);
+    lines();
+    c.strokeStyle='#d0ccc3';c.lineWidth=0.6;c.strokeRect(20,20,PW-40,PH_px-40);
+    c.font=italic ${Math.round(PW*0.055)}px "EB Garamond",Georgia,serif;
+    c.fillStyle='#ccc';c.textAlign='center';c.fillText('extractos',PW/2,PH_px/2+8);
+  } else {
+    const d=IMGS[idx-1]||null;
+    const ph=PH[idx-1];
+    const n=String(idx).padStart(2,'0');
+    const a=(d&&d.a)||ph.a,b=(d&&d.b)||ph.b;
+    const isL=idx%2===1;
+    // Paper base color — warm grey for photo pages, cream for placeholders
+    c.fillStyle=(d&&d.src)?'#8e8880':'#edeade';
+    c.fillRect(0,0,PW,PH_px);
+    if(!(d&&d.src)) lines();
+    if(!(d&&d.src)){
+      // placeholder marks
+      const my=PH_px/2,h=PH_px*0.28;
+      c.strokeStyle='#d0ccc3';c.lineWidth=0.5;
+      c.beginPath();c.moveTo(PW*0.1,my-h/2);c.lineTo(PW*0.9,my-h/2);c.stroke();
+      c.beginPath();c.moveTo(PW*0.1,my+h/2);c.lineTo(PW*0.9,my+h/2);c.stroke();
+      c.font=300 ${Math.round(PW*0.022)}px "IBM Plex Mono",monospace;
+      c.fillStyle='#ccc';c.textAlign='center';c.fillText(imagen ${n},PW/2,my+6);
+    }
+    // Bottom gradient
+    const g=c.createLinearGradient(0,PH_px*0.65,0,PH_px);
+    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,0.52)');
+    c.fillStyle=g;c.fillRect(0,0,PW,PH_px);
+    // Labels
+    const col=(d&&d.src)?'rgba(255,255,255,0.88)':'#444';
+    const dim=(d&&d.src)?'rgba(255,255,255,0.35)':'#bbb';
+    c.font=300 ${Math.round(PW*0.026)}px "IBM Plex Mono",monospace;
+    c.fillStyle=col;
+    c.textAlign='left'; c.fillText(a,26,PH_px-44);
+    c.textAlign='right';c.fillText(b,PW-26,PH_px-44);
+    c.font=300 ${Math.round(PW*0.021)}px "IBM Plex Mono",monospace;
+    c.fillStyle=dim;
+    if(isL){c.textAlign='left'; c.fillText(n,26,PH_px-26);}
+    else   {c.textAlign='right';c.fillText(n,PW-26,PH_px-26);}
+  }
+  return oc;
+}
+
+/* ── DRAW ONE FLIP FRAME ── */
+function drawFlip(t,fOC,bOC){
+  clearFC();
+  const m=mob();
+  const SPINE=m?0:PW;
+  const angle=t*Math.PI;
+  const cosA=Math.cos(angle);
+  const sinA=Math.abs(Math.sin(angle));
+  const foldX=SPINE+PW*cosA;
+
+  ctx.imageSmoothingEnabled=true;
+  ctx.imageSmoothingQuality='high';
 
   // ── FRONT FACE ──
-  // Visible when progress < 0.5 (right side of spine)
-  if(progress < 0.499 && frontImg){
-    const w = foldX - SPINE;
-    if(w > 0.5){
+  if(t<0.5&&fOC){
+    const w=foldX-SPINE;
+    if(w>1){
       ctx.save();
-      ctx.beginPath();
-      ctx.rect(SPINE, 0, W, H);
-      ctx.clip();
-
-      // Cylindrical stretch: the visible width compresses as it curves
-      // We draw frontImg from SPINE to foldX, stretching source to fill
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(frontImg, 0, 0, frontImg.width, frontImg.height,
-                    SPINE, 0, w, H);
-
-      // Curl shadow — darkens as fold approaches
-      const shFront = ctx.createLinearGradient(foldX - w*0.5, 0, foldX, 0);
-      shFront.addColorStop(0, 'rgba(0,0,0,0)');
-      shFront.addColorStop(0.7, rgba(0,0,0,${0.12 * sinA}));
-      shFront.addColorStop(1,   rgba(0,0,0,${0.42 * sinA}));
-      ctx.fillStyle = shFront;
-      ctx.fillRect(SPINE, 0, w, H);
-
+      ctx.beginPath();ctx.rect(SPINE,0,PW,PH_px);ctx.clip();
+      ctx.drawImage(fOC,0,0,fOC.width,fOC.height,SPINE,0,w,PH_px);
+      // curl shadow
+      const sh=ctx.createLinearGradient(foldX-w*0.5,0,foldX,0);
+      sh.addColorStop(0,'rgba(0,0,0,0)');
+      sh.addColorStop(0.6,rgba(0,0,0,${0.10*sinA}));
+      sh.addColorStop(1,rgba(0,0,0,${0.50*sinA}));
+      ctx.fillStyle=sh;ctx.fillRect(SPINE,0,w,PH_px);
       ctx.restore();
     }
   }
 
   // ── BACK FACE ──
-  // Visible when progress > 0.5 (page has turned, showing back)
-  if(progress > 0.501 && backImg){
-    const w = SPINE - foldX; // positive when foldX < SPINE
-    if(w > 0.5){
+  if(t>0.5&&bOC){
+    const w=SPINE-foldX;
+    if(w>1){
       ctx.save();
-      ctx.beginPath();
-      ctx.rect(0, 0, SPINE, H);
-      ctx.clip();
-
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-
-      // Mirror the back face: draw from foldX to SPINE
-      // The back face content is flipped horizontally
+      ctx.beginPath();ctx.rect(0,0,SPINE,PH_px);ctx.clip();
       ctx.save();
-      ctx.translate(SPINE, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(backImg, 0, 0, backImg.width, backImg.height,
-                    0, 0, w, H);
+      ctx.translate(SPINE,0);ctx.scale(-1,1);
+      ctx.drawImage(bOC,0,0,bOC.width,bOC.height,0,0,w,PH_px);
       ctx.restore();
-
-      // Curl shadow on back — darkens near fold (left edge of back face)
-      const shBack = ctx.createLinearGradient(foldX, 0, foldX + w*0.5, 0);
-      shBack.addColorStop(0, rgba(0,0,0,${0.38 * (1 - sinA)}));
-      shBack.addColorStop(0.5,rgba(0,0,0,${0.12 * (1 - sinA)}));
-      shBack.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = shBack;
-      ctx.fillRect(foldX, 0, w, H);
-
+      // curl shadow on back
+      const sh=ctx.createLinearGradient(foldX,0,foldX+w*0.55,0);
+      sh.addColorStop(0,rgba(0,0,0,${0.42*(1-sinA)}));
+      sh.addColorStop(0.5,rgba(0,0,0,${0.14*(1-sinA)}));
+      sh.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sh;ctx.fillRect(foldX,0,w,PH_px);
       ctx.restore();
     }
   }
 
   // ── FOLD CREASE ──
-  // The curved crease at the fold — specular + dark edge
-  const creaseW = Math.max(4, 12 * sinA);
-  if(creaseW > 0.5 && foldX > -creaseW && foldX < (mobile?W:W*2)+creaseW){
-    // Dark shadow just before fold
-    const darkSide = ctx.createLinearGradient(foldX - creaseW, 0, foldX, 0);
-    darkSide.addColorStop(0, 'rgba(0,0,0,0)');
-    darkSide.addColorStop(1, rgba(0,0,0,${0.28 * sinA}));
-    ctx.fillStyle = darkSide;
-    ctx.fillRect(foldX - creaseW, 0, creaseW, H);
-
-    // Specular highlight right at fold
-    const spec = ctx.createLinearGradient(foldX - 1.5, 0, foldX + 2.5, 0);
-    spec.addColorStop(0, rgba(255,255,255,${0.0}));
-    spec.addColorStop(0.4,rgba(255,255,255,${0.38 * sinA}));
-    spec.addColorStop(0.5,rgba(255,255,255,${0.55 * sinA}));
-    spec.addColorStop(0.7,rgba(0,0,0,${0.15 * sinA}));
-    spec.addColorStop(1,  'rgba(0,0,0,0)');
-    ctx.fillStyle = spec;
-    ctx.fillRect(foldX - 1.5, 0, 4, H);
+  if(sinA>0.03){
+    // dark before fold
+    const dk=ctx.createLinearGradient(foldX-16*sinA,0,foldX,0);
+    dk.addColorStop(0,'rgba(0,0,0,0)');
+    dk.addColorStop(1,rgba(0,0,0,${0.30*sinA}));
+    ctx.fillStyle=dk;ctx.fillRect(foldX-16*sinA,0,16*sinA,PH_px);
+    // specular at fold
+    const sp=ctx.createLinearGradient(foldX-1.5,0,foldX+3.5,0);
+    sp.addColorStop(0,'rgba(255,255,255,0)');
+    sp.addColorStop(0.3,rgba(255,255,255,${0.40*sinA}));
+    sp.addColorStop(0.5,rgba(255,255,255,${0.60*sinA}));
+    sp.addColorStop(0.7,rgba(0,0,0,${0.20*sinA}));
+    sp.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=sp;ctx.fillRect(foldX-1.5,0,5,PH_px);
   }
 
-  // ── CAST SHADOW onto static pages ──
-  if(sinA > 0.02 && !mobile){
-    if(progress < 0.5){
-      // Shadow onto left page (from lifting page)
-      const sw = W * sinA * 0.55;
-      const sh = ctx.createLinearGradient(SPINE, 0, SPINE - sw, 0);
-      sh.addColorStop(0, rgba(0,0,0,${0.3 * sinA}));
-      sh.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = sh;
-      ctx.fillRect(SPINE - sw, 0, sw, H);
+  // ── CAST SHADOW ──
+  if(sinA>0.02&&!m){
+    if(t<0.5){
+      const sw=PW*sinA*0.52;
+      const sl=ctx.createLinearGradient(SPINE,0,SPINE-sw,0);
+      sl.addColorStop(0,rgba(0,0,0,${0.28*sinA}));sl.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sl;ctx.fillRect(SPINE-sw,0,sw,PH_px);
     } else {
-      // Shadow onto right page (from landing page)
-      const sw = W * sinA * 0.45;
-      const sh = ctx.createLinearGradient(SPINE, 0, SPINE + sw, 0);
-      sh.addColorStop(0, rgba(0,0,0,${0.25 * sinA}));
-      sh.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = sh;
-      ctx.fillRect(SPINE, 0, sw, H);
+      const sw=PW*sinA*0.42;
+      const sr=ctx.createLinearGradient(SPINE,0,SPINE+sw,0);
+      sr.addColorStop(0,rgba(0,0,0,${0.22*sinA}));sr.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=sr;ctx.fillRect(SPINE,0,sw,PH_px);
     }
   }
 
-  // ── SPINE SHADOW always (desktop) ──
-  if(!mobile){
-    const spineSh = ctx.createLinearGradient(SPINE - 6, 0, SPINE + 6, 0);
-    spineSh.addColorStop(0,   'rgba(0,0,0,0.4)');
-    spineSh.addColorStop(0.4, 'rgba(0,0,0,0.7)');
-    spineSh.addColorStop(0.5, 'rgba(0,0,0,0.75)');
-    spineSh.addColorStop(0.6, 'rgba(0,0,0,0.55)');
-    spineSh.addColorStop(1,   'rgba(0,0,0,0.22)');
-    ctx.fillStyle = spineSh;
-    ctx.fillRect(SPINE - 6, 0, 12, H);
-
-    // Specular on spine left edge
-    const spSpec = ctx.createLinearGradient(SPINE - 6, 0, SPINE - 2, 0);
-    spSpec.addColorStop(0, 'rgba(255,255,255,0)');
-    spSpec.addColorStop(1, 'rgba(255,255,255,0.07)');
-    ctx.fillStyle = spSpec;
-    ctx.fillRect(SPINE - 6, 0, 4, H);
+  // ── SPINE (during flip, reinforces groove) ──
+  if(!m){
+    const sg=ctx.createLinearGradient(SPINE-8,0,SPINE+8,0);
+    sg.addColorStop(0,'rgba(0,0,0,0.20)');
+    sg.addColorStop(0.35,'rgba(0,0,0,0.60)');
+    sg.addColorStop(0.5,'rgba(0,0,0,0.72)');
+    sg.addColorStop(0.65,'rgba(0,0,0,0.55)');
+    sg.addColorStop(1,'rgba(0,0,0,0.18)');
+    ctx.fillStyle=sg;ctx.fillRect(SPINE-8,0,16,PH_px);
+    const ss=ctx.createLinearGradient(SPINE-8,0,SPINE-3,0);
+    ss.addColorStop(0,'rgba(255,255,255,0.09)');ss.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=ss;ctx.fillRect(SPINE-8,0,5,PH_px);
   }
 }
 
-/* ── EASING — custom cubic for paper feel ── */
-function easeFlip(t){
-  // Slow start (page lifts gently), fast middle, gentle land
-  if(t < 0.15) return 3.2 * t * t;
-  if(t < 0.75) return 0.077 + 1.22*(t - 0.15);
-  const s = (t - 0.75) / 0.25;
-  return 0.807 + 0.193*(1 - Math.pow(1 - s, 2.5));
+/* ── EASING ── */
+function ease(t){
+  if(t<0.18) return 3.0*t*t;
+  if(t<0.72) return 0.097+1.19*(t-0.18);
+  const s=(t-0.72)/0.28;
+  return 0.740+0.260*(1-Math.pow(1-s,2.8));
 }
 
-const FLIP_DURATION = 880; // ms
+/* ── STATE ── */
+let cur=0,flipping=false,flipDir=1,flipRAF=null,flipStart=null;
+let fOC=null,bOC=null;
+const FLIP_MS=860;
 
-function startFlip(dir, frontIdx, backIdx){
-  if(flipping) return;
-  flipping = true;
-  flipDir  = dir;
-  flipStart = null;
-
-  let loaded = 0;
-  function onLoad(){ if(++loaded === 2) kickFlip(); }
-
-  buildPageCanvas(frontIdx, img => { flipFrontImg = img; onLoad(); });
-  buildPageCanvas(backIdx,  img => { flipBackImg  = img; onLoad(); });
+function startFlip(dir,fi,bi){
+  if(flipping)return;
+  flipping=true;flipDir=dir;flipStart=null;
+  fOC=buildOC(fi);bOC=buildOC(bi);
+  requestAnimationFrame(animFlip);
 }
 
-function kickFlip(){
-  flipStart = null;
-  requestAnimationFrame(animateFlip);
-}
-
-function animateFlip(ts){
-  if(!flipStart) flipStart = ts;
-  const raw = Math.min((ts - flipStart) / FLIP_DURATION, 1);
-  const t   = easeFlip(raw);
-  const progress = flipDir === 1 ? t : 1 - t;
-
-  drawRealisticFlip(progress, flipFrontImg, flipBackImg);
-
-  if(raw < 1){
-    flipRAF = requestAnimationFrame(animateFlip);
+function animFlip(ts){
+  if(!flipStart)flipStart=ts;
+  const raw=Math.min((ts-flipStart)/FLIP_MS,1);
+  const t=ease(raw);
+  const prog=flipDir===1?t:1-t;
+  drawFlip(prog,fOC,bOC);
+  if(raw<1){
+    flipRAF=requestAnimationFrame(animFlip);
   } else {
-    // Done
-    clearFlipCanvas();
-    flipping  = false;
-    flipStart = null;
-    flipRAF   = null;
-    refreshStatic();
-    setNav();
+    clearFC();flipping=false;flipStart=null;flipRAF=null;
+    refreshStatic();setNav();
   }
 }
 
 /* ── NAVIGATION ── */
 function next(){
-  if(flipping || cur >= FTOTAL) return;
-  const frontIdx = cur === 0 ? 0 : Math.min(cur*2, N+1);
-  const backIdx  = Math.min(cur*2 + 1, N+1);
-  cur++;
-  setNav();
-  startFlip(1, frontIdx, backIdx);
+  if(flipping||cur>=FTOTAL)return;
+  const fi=cur===0?0:Math.min(cur*2,N+1);
+  const bi=Math.min(cur*2+1,N+1);
+  cur++;setNav();startFlip(1,fi,bi);
 }
-
 function prev(){
-  if(flipping || cur <= 0) return;
-  const frontIdx = cur === 0 ? 0 : Math.min((cur-1)*2, N+1);
-  const backIdx  = Math.min((cur-1)*2 + 1, N+1);
-  cur--;
-  setNav();
-  startFlip(-1, frontIdx, backIdx);
+  if(flipping||cur<=0)return;
+  const fi=Math.min((cur-1)*2,N+1);
+  const bi=Math.min((cur-1)*2+1,N+1);
+  cur--;setNav();startFlip(-1,fi,bi);
 }
 
 function setNav(){
-  document.getElementById('bp').disabled = cur <= 0;
-  document.getElementById('bn').disabled = cur >= FTOTAL;
-  const el = document.getElementById('ctr');
-  if(cur === 0){ el.textContent = 'portada'; return; }
-  if(cur >= FTOTAL){ el.textContent = 'fin'; return; }
-  const l = cur*2-1, r2 = cur*2;
-  el.textContent = ${String(l).padStart(2,'0')} · ${r2<=N ? String(r2).padStart(2,'0'):'—'};
+  document.getElementById('bp').disabled=cur<=0;
+  document.getElementById('bn').disabled=cur>=FTOTAL;
+  const el=document.getElementById('ctr');
+  if(cur===0){el.textContent='portada';return;}
+  if(cur>=FTOTAL){el.textContent='fin';return;}
+  const l=cur*2-1,r=cur*2;
+  el.textContent=${String(l).padStart(2,'0')} · ${r<=N?String(r).padStart(2,'0'):'—'};
 }
 
 /* ── OPEN / CLOSE ── */
 function openBook(){
   document.getElementById('intro').classList.add('gone');
-  document.getElementById('stage').classList.add('on');
-  document.getElementById('nav').classList.add('on');
-  document.getElementById('xb').classList.add('on');
-  document.getElementById('kh').classList.add('on');
-  refreshStatic(); setNav(); clearFlipCanvas();
-  // Preload first pages in background
-  for(let i=0; i<=Math.min(5, N+1); i++) buildPageCanvas(i, ()=>{});
+  ['stage','nav','xb','kh'].forEach(id=>document.getElementById(id).classList.add('on'));
+  refreshStatic();setNav();clearFC();
 }
-
 function closeBook(){
-  if(flipRAF){ cancelAnimationFrame(flipRAF); flipRAF=null; }
-  flipping=false; flipStart=null;
-  ['stage','nav','xb','kh'].forEach(id => document.getElementById(id).classList.remove('on'));
+  if(flipRAF){cancelAnimationFrame(flipRAF);flipRAF=null;}
+  flipping=false;flipStart=null;
+  ['stage','nav','xb','kh'].forEach(id=>document.getElementById(id).classList.remove('on'));
   setTimeout(()=>{
-    cur=0; clearFlipCanvas(); refreshStatic(); setNav();
+    cur=0;clearFC();refreshStatic();setNav();
     document.getElementById('intro').classList.remove('gone');
-  }, 650);
+  },650);
 }
 
 /* ── EVENTS ── */
-hotR.addEventListener('click', e=>{ e.stopPropagation(); next(); });
-hotL.addEventListener('click', e=>{ e.stopPropagation(); prev(); });
+hotR.addEventListener('click',e=>{e.stopPropagation();next();});
+hotL.addEventListener('click',e=>{e.stopPropagation();prev();});
 
-document.addEventListener('keydown', e=>{
-  if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); next(); }
-  else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
-  else if(e.key==='Escape') closeBook();
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
+  else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
+  else if(e.key==='Escape')closeBook();
 });
 
-// Touch swipe
-let touchStartX = 0, touchStartY = 0;
-document.addEventListener('touchstart', e=>{
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-}, {passive:true});
-document.addEventListener('touchend', e=>{
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40){
-    dx < 0 ? next() : prev();
-  }
-}, {passive:true});
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  const dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>38)dx<0?next():prev();
+},{passive:true});
 
-// Resize
-window.addEventListener('resize', ()=>{
-  calcSize();
-  Object.keys(pageCanvasCache).forEach(k => delete pageCanvasCache[k]);
-  layoutBook();
-  clearFlipCanvas();
-  refreshStatic();
+window.addEventListener('resize',()=>{
+  calcSize();layoutBook();clearFC();refreshStatic();
 });
 
 /* ── INIT ── */
-refreshStatic(); setNav(); clearFlipCanvas();
+refreshStatic();setNav();clearFC();
 </script>
 
 </body>
