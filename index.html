@@ -480,7 +480,7 @@ function refreshStatic(){
    backIdx:  page arriving
    side: 'right' (leaf on right half) or 'left' (leaf on left half)
    ════════════════════════════════════ */
-function doFlip(frontIdx, backIdx, side){
+function doFlip(frontIdx, backIdx, side, onStart){
   if(flipping) return;
   flipping=true;
 
@@ -511,6 +511,9 @@ function doFlip(frontIdx, backIdx, side){
   /* force reflow */
   leaf.getBoundingClientRect();
 
+  /* Update static pages NOW while the leaf covers them — no flash */
+  if(onStart) onStart();
+
   /* animate: rotate to -180 (forward) or +180 (backward) */
   var target = side === 'right' ? 'rotateY(-180deg)' : 'rotateY(180deg)';
   leaf.style.transition = 'transform ' + ms + 'ms ' + ease;
@@ -527,13 +530,12 @@ function doFlip(frontIdx, backIdx, side){
     lb.classList.remove('sh');
   }, ms * 0.82);
 
-  /* finish */
+  /* finish — no DOM changes here, pages already updated */
   if(flipTimer) clearTimeout(flipTimer);
   flipTimer = setTimeout(function(){
     leaf.style.display = 'none';
     leaf.style.transition = 'none';
     flipping = false; flipTimer = null;
-    refreshStatic();
     setNav();
   }, ms + 20);
 }
@@ -546,22 +548,22 @@ function next(){
   var m=mob();
 
   if(m){
-    /* mobile: just show next page with flip from right */
     var fi=cur, bi=cur+1;
     cur++;
-    doFlip(fi, bi, 'right');
     setNav();
+    doFlip(fi, bi, 'right', function(){
+      pgB.innerHTML = pageHTML(bi);
+    });
   } else {
-    /* desktop: flip the right page of current spread to left of next */
     var p=spreadPages(cur);
     var np=spreadPages(cur+1);
-    /* front = current right page, back = next right page */
-    /* the left page of next spread appears in pgA automatically after */
     cur++;
-    doFlip(p.right, np.right, 'right');
-    /* update left page immediately (it slides under) */
-    if(np.left>=0) pgA.innerHTML=pageHTML(np.left);
     setNav();
+    doFlip(p.right, np.right, 'right', function(){
+      /* static pages updated while leaf covers them */
+      pgA.innerHTML = np.left>=0 ? pageHTML(np.left) : '<div class="pc emp"></div>';
+      pgB.innerHTML = pageHTML(np.right);
+    });
   }
 }
 
@@ -572,17 +574,19 @@ function prev(){
   if(m){
     var fi=cur, bi=cur-1;
     cur--;
-    doFlip(fi, bi, 'left');
     setNav();
+    doFlip(fi, bi, 'left', function(){
+      pgB.innerHTML = pageHTML(bi);
+    });
   } else {
     var p2=spreadPages(cur);
     var pp=spreadPages(cur-1);
     cur--;
-    /* front = current left page, back = prev left page */
-    doFlip(p2.left>=0?p2.left:0, pp.left>=0?pp.left:0, 'left');
-    /* update right page immediately */
-    pgB.innerHTML=pageHTML(pp.right);
     setNav();
+    doFlip(p2.left>=0?p2.left:0, pp.left>=0?pp.left:0, 'left', function(){
+      pgA.innerHTML = pp.left>=0 ? pageHTML(pp.left) : '<div class="pc emp"></div>';
+      pgB.innerHTML = pageHTML(pp.right);
+    });
   }
 }
 
