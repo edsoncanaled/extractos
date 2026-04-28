@@ -63,16 +63,23 @@ body::before{
 }
 #stage.on{opacity:1;visibility:visible}
 
-/* ── BOOK ── */
-#book{
+/* ── BOOK SHADOW WRAPPER (no 3D here — iOS safe) ── */
+#book-wrap{
   position:relative;
   border-radius:2px;
   box-shadow:
-    0 2px   4px  rgba(0,0,0,.38),
-    0 8px   20px rgba(0,0,0,.48),
-    0 28px  52px rgba(0,0,0,.62),
-    0 70px 110px rgba(0,0,0,.78),
-    0 110px 150px rgba(0,0,0,.45);
+    0 2px   6px  rgba(0,0,0,.12),
+    0 10px  24px rgba(0,0,0,.18),
+    0 32px  60px rgba(0,0,0,.22),
+    0 70px 100px rgba(0,0,0,.18);
+}
+
+/* ── BOOK (3D context, no filter/shadow here) ── */
+#book{
+  position:relative;
+  border-radius:2px;
+  perspective:1800px;
+  overflow:hidden;
 }
 
 /* ── PAGES ── */
@@ -90,27 +97,31 @@ body::before{
     rgba(0,0,0,.66) 50%,rgba(0,0,0,.44) 65%,rgba(0,0,0,.08) 100%);
 }
 
-/* ── FLIP LEAF ──
-   Two divs: front (outgoing) + back (incoming).
-   Animation: front scaleX 1→0, then back scaleX 0→1.
-   Pivot always at the spine edge.
-── */
-#leaf{position:absolute;top:0;z-index:20;pointer-events:none;display:none;overflow:hidden}
-#lf,#lb{position:absolute;inset:0;overflow:hidden}
+/* ── FLIP LEAF — rotateY 3D ── */
+#leaf{
+  position:absolute;top:0;z-index:20;pointer-events:none;display:none;
+  transform-style:preserve-3d;
+}
+#lf,#lb{
+  position:absolute;inset:0;overflow:hidden;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+#lb{ transform:rotateY(180deg); }
 
-/* fold shadow */
+/* fold shadow — darkens near the spine as page curls */
 #lf::after{
-  content:'';position:absolute;inset:0;z-index:5;
-  background:linear-gradient(to left,rgba(0,0,0,0) 50%,rgba(0,0,0,.30) 100%);
-  opacity:0;transition:opacity .18s;pointer-events:none;
+  content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(to left, rgba(0,0,0,0) 60%, rgba(0,0,0,.28) 100%);
+  opacity:0;transition:opacity .15s;
 }
-#lf.sh::after{opacity:1}
+#lf.sh::after{ opacity:1; }
 #lb::after{
-  content:'';position:absolute;inset:0;z-index:5;
-  background:linear-gradient(to right,rgba(0,0,0,.22) 0%,rgba(0,0,0,0) 50%);
-  opacity:0;transition:opacity .18s;pointer-events:none;
+  content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  background:linear-gradient(to right, rgba(0,0,0,.22) 0%, rgba(0,0,0,0) 55%);
+  opacity:0;transition:opacity .15s;
 }
-#lb.sh::after{opacity:1}
+#lb.sh::after{ opacity:1; }
 
 /* click zones */
 #hz-r,#hz-l{position:absolute;top:0;z-index:30;cursor:pointer}
@@ -246,13 +257,15 @@ body::before{
 </div>
 
 <div id="stage">
-  <div id="book">
-    <div class="pg-slot" id="pg-a"></div>
-    <div class="pg-slot" id="pg-b"></div>
-    <div id="leaf"><div id="lf"></div><div id="lb"></div></div>
-    <div id="spine"></div>
-    <div id="hz-r"></div>
-    <div id="hz-l"></div>
+  <div id="book-wrap">
+    <div id="book">
+      <div class="pg-slot" id="pg-a"></div>
+      <div class="pg-slot" id="pg-b"></div>
+      <div id="leaf"><div id="lf"></div><div id="lb"></div></div>
+      <div id="spine"></div>
+      <div id="hz-r"></div>
+      <div id="hz-l"></div>
+    </div>
   </div>
 </div>
 
@@ -302,6 +315,7 @@ var N = 15;
    ELEMENTS
    ════════════════════ */
 var book   = document.getElementById('book');
+var bookWrap = document.getElementById('book-wrap');
 var pgA    = document.getElementById('pg-a');
 var pgB    = document.getElementById('pg-b');
 var leaf   = document.getElementById('leaf');
@@ -351,6 +365,8 @@ function layout(){
 
   book.style.width  = bw+'px';
   book.style.height = PH+'px';
+  bookWrap.style.width  = bw+'px';
+  bookWrap.style.height = PH+'px';
 
   /* page A = left on desktop, only page on mobile */
   pgA.style.width  = PW+'px';
@@ -468,57 +484,58 @@ function doFlip(frontIdx, backIdx, side){
   if(flipping) return;
   flipping=true;
 
-  var ms  = mob() ? 420 : 500;
-  var half = Math.round(ms * 0.52);  /* slight overlap between phases */
+  var ms = mob() ? 460 : 520;
+  var ease = 'cubic-bezier(.4,0,.2,1)';
 
   lf.innerHTML = pageHTML(frontIdx);
   lb.innerHTML = pageHTML(backIdx);
   lf.className=''; lb.className='';
 
-  /* position leaf on the correct side */
+  /* pivot at spine edge */
   if(side==='right'){
-    leaf.style.left  = mob()?'0':PW+'px';
-    leaf.style.right = 'auto';
-    lf.style.transformOrigin='left center';
-    lb.style.transformOrigin='left center';
+    leaf.style.left = mob() ? '0' : PW+'px';
+    leaf.style.transformOrigin = 'left center';
   } else {
-    leaf.style.left  = '0';
-    leaf.style.right = 'auto';
-    lf.style.transformOrigin='right center';
-    lb.style.transformOrigin='right center';
+    leaf.style.left = '0';
+    leaf.style.transformOrigin = 'right center';
   }
 
-  /* reset: front visible, back hidden */
-  lf.style.transition='none'; lf.style.transform='scaleX(1)';
-  lb.style.transition='none'; lb.style.transform='scaleX(0)';
-  leaf.style.display='block';
-  leaf.getBoundingClientRect(); /* force reflow */
-
-  /* phase 1: collapse front — ease-in with slight acceleration */
-  lf.style.transition='transform '+half+'ms cubic-bezier(.4,0,1,1)';
-  lf.style.transform='scaleX(0)';
+  /* start: front face showing (0deg), back face hidden (rotated away) */
+  leaf.style.transition = 'none';
+  leaf.style.transform  = 'rotateY(0deg)';
+  lf.style.display = '';
+  lb.style.display = '';
+  leaf.style.display = 'block';
   lf.classList.add('sh');
 
-  /* phase 2: expand back — starts just before front finishes for smooth handoff */
+  /* force reflow */
+  leaf.getBoundingClientRect();
+
+  /* animate: rotate to -180 (forward) or +180 (backward) */
+  var target = side === 'right' ? 'rotateY(-180deg)' : 'rotateY(180deg)';
+  leaf.style.transition = 'transform ' + ms + 'ms ' + ease;
+  leaf.style.transform  = target;
+
+  /* shadow: peak at midpoint then fade */
   setTimeout(function(){
     if(!flipping) return;
-    lf.style.display='none';
-    lb.style.transition='transform '+half+'ms cubic-bezier(0,0,.2,1)';
-    lb.style.transform='scaleX(1)';
+    lf.classList.remove('sh');
     lb.classList.add('sh');
-    /* fade out fold shadow as page fully opens */
-    setTimeout(function(){ lb.classList.remove('sh'); }, Math.round(half * 0.6));
-  }, Math.round(half * 0.88)); /* start phase 2 slightly before phase 1 ends */
+  }, ms * 0.48);
+  setTimeout(function(){
+    if(!flipping) return;
+    lb.classList.remove('sh');
+  }, ms * 0.82);
 
   /* finish */
   if(flipTimer) clearTimeout(flipTimer);
-  flipTimer=setTimeout(function(){
-    leaf.style.display='none';
-    lf.style.display='';
-    flipping=false; flipTimer=null;
+  flipTimer = setTimeout(function(){
+    leaf.style.display = 'none';
+    leaf.style.transition = 'none';
+    flipping = false; flipTimer = null;
     refreshStatic();
     setNav();
-  }, half * 2 + 20);
+  }, ms + 20);
 }
 
 /* ════════════════════
