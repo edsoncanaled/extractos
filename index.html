@@ -179,7 +179,7 @@ var LABELS = [
 
 var N      = 15;                          // total content pages
 var FTOTAL = Math.ceil((N + 1) / 2);     // total spreads after cover
-var FLIPMS = 900;
+var FLIPMS = 500; // overridden per flip call based on device
 
 /* ═══════════════════════════════════════════
    SIZING
@@ -657,6 +657,7 @@ var openingCoverFlag = false;
 
 function startFlip(dir, fi, bi, isOpeningCover) {
   if (flipping) return;
+  FLIPMS = mob() ? 420 : 540;
   flipping = true;
   flipDir  = dir;
   flipStart = null;
@@ -690,7 +691,10 @@ function animFlip(ts) {
     openingCoverFlag = false;
     /* Resize canvas back to full width after cover flip */
     layoutBook(false);
-    ctx.clearRect(0, 0, PW * 2, PH);
+    /* Clear entire canvas surface (use raw pixel dimensions) */
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, fc.width, fc.height);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     refreshStatic();
     setNav();
   }
