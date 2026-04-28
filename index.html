@@ -9,20 +9,23 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--black:#09080a;--paper:#edeade}
+
 html,body{
-  width:100%;height:100%;overflow:hidden;
-  background:var(--black);
-  font-family:'IBM Plex Mono',monospace;
-  -webkit-user-select:none;user-select:none;
-  touch-action:none;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
-  opacity:.20;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+width:100%;height:100%;overflow:hidden;
+background:var(–black);
+font-family:‘IBM Plex Mono’,monospace;
+-webkit-user-select:none;user-select:none;
+touch-action:none;
 }
 
-/* INTRO */
+/* ── GRAIN ── */
+body::before{
+content:’’;position:fixed;inset:0;pointer-events:none;z-index:9999;
+opacity:.18;mix-blend-mode:overlay;
+background-image:url(“data:image/svg+xml,%3Csvg viewBox=‘0 0 400 400’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cfilter id=‘n’%3E%3CfeTurbulence type=‘fractalNoise’ baseFrequency=‘0.8’ numOctaves=‘4’ stitchTiles=‘stitch’/%3E%3C/filter%3E%3Crect width=‘100%25’ height=‘100%25’ filter=‘url(%23n)’/%3E%3C/svg%3E”);
+}
+
+/* ── INTRO ── */
 #intro{
 position:fixed;inset:0;
 display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -50,78 +53,98 @@ opacity:0;animation:fadeUp .5s 1.6s forwards;transition:background .2s,transform
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes widen{to{width:52px}}
 
-/* STAGE */
+/* ── STAGE ── */
 #stage{
-position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-opacity:0;visibility:hidden;transition:opacity .7s,visibility .7s;
+position:fixed;inset:0;
+display:flex;align-items:center;justify-content:center;
+opacity:0;visibility:hidden;
+transition:opacity .7s,visibility .7s;
 }
 #stage.on{opacity:1;visibility:visible}
 
-/* BOOK — perspective container */
-#book{
+/* ── SHADOW WRAPPER (no 3d transforms here — iOS bug) ── */
+#book-shadow{
 position:relative;
-perspective:2200px;
-transform-style:preserve-3d;
-transform:rotateX(3deg);
-filter:drop-shadow(0 60px 120px rgba(0,0,0,.95)) drop-shadow(0 18px 40px rgba(0,0,0,.6));
+box-shadow:
+0 60px 120px rgba(0,0,0,.92),
+0 20px 50px  rgba(0,0,0,.60),
+0 6px  18px  rgba(0,0,0,.40);
+border-radius:2px;
+/* Subtle tilt via 2d transform only — safe on iOS */
+transform:perspective(1200px) rotateX(3deg);
+transition:width 460ms cubic-bezier(.645,.045,.355,1);
 }
 
-/* Static background pages */
+/* ── BOOK (3d context lives here, no filter) ── */
+#book{
+position:relative;
+overflow:hidden; /* clip pages */
+border-radius:2px;
+}
+
+/* ── STATIC PAGES ── */
 .spage{
 position:absolute;top:0;
 overflow:hidden;background:var(–paper);
+will-change:contents;
 }
 #sp-left {left:0; border-radius:2px 0 0 2px}
 #sp-right{right:0;border-radius:0 2px 2px 0}
 
-/* THE LEAF — rotates around its left edge */
-#leaf{
-position:absolute;top:0;
-transform-origin:left center;
-transform-style:preserve-3d;
-z-index:20;
-pointer-events:none;
-display:none;
-}
-#leaf-front,#leaf-back{
-position:absolute;inset:0;
-overflow:hidden;
-backface-visibility:hidden;
--webkit-backface-visibility:hidden;
-}
-#leaf-back{transform:rotateY(180deg)}
-/* Mirror back so content reads correctly */
-#leaf-back-inner{
-width:100%;height:100%;
-transform:scaleX(-1);
-}
-
-/* Realistic fold shadow on the leaf */
-#leaf-front::after,#leaf-back::after{
-content:’’;position:absolute;inset:0;pointer-events:none;z-index:10;
-}
-/* Right-edge shadow when closing (front face) */
-#leaf-front::after{
-background:linear-gradient(to left,rgba(0,0,0,.0) 65%,rgba(0,0,0,.28) 100%);
-}
-/* Left-edge shadow when opening (back face — already mirrored, so gradient also mirrors) */
-#leaf-back::after{
-background:linear-gradient(to left,rgba(0,0,0,.0) 65%,rgba(0,0,0,.20) 100%);
-}
-
-/* Spine */
+/* ── SPINE ── */
 #spine{
 position:absolute;top:0;z-index:30;pointer-events:none;
 background:linear-gradient(to right,
-rgba(0,0,0,.12) 0%,rgba(0,0,0,.52) 30%,
-rgba(0,0,0,.70) 50%,rgba(0,0,0,.48) 70%,rgba(0,0,0,.12) 100%);
+rgba(0,0,0,.10) 0%,rgba(0,0,0,.50) 35%,
+rgba(0,0,0,.68) 50%,rgba(0,0,0,.46) 65%,rgba(0,0,0,.10) 100%);
 }
 
-/* Click zones */
-#hz-right,#hz-left{position:absolute;top:0;z-index:50;cursor:pointer}
-#hz-right{right:0} #hz-left{left:0}
+/* ── FLIP LEAF ──
+Uses two absolutely-positioned divs (front/back) that swap visibility
+via clipPath animation — no preserve-3d, fully iOS safe.
+The “fold” effect comes from shrinking width (perspective compression)
+and a gradient overlay.
+─────────────────────────────────────── */
+#leaf{
+position:absolute;top:0;
+z-index:20;pointer-events:none;
+display:none;
+overflow:hidden;
+}
+/* Front face: the page being turned */
+#leaf-a{
+position:absolute;inset:0;
+overflow:hidden;
+transform-origin:left center;
+will-change:transform;
+}
+/* Fold shadow on front */
+#leaf-a::after{
+content:’’;position:absolute;inset:0;z-index:5;pointer-events:none;
+background:linear-gradient(to left,
+rgba(0,0,0,0) 50%, rgba(0,0,0,.35) 100%);
+opacity:0;
+transition:opacity 200ms;
+}
+#leaf-a.shadowed::after{opacity:1}
 
-/* PAGE CONTENT */
+/* Back face: destination page (hidden by clip, revealed as fold passes) */
+#leaf-b{
+position:absolute;inset:0;
+overflow:hidden;
+transform-origin:right center;
+will-change:transform;
+}
+#leaf-b::after{
+content:’’;position:absolute;inset:0;z-index:5;pointer-events:none;
+background:linear-gradient(to right,
+rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 50%);
+opacity:0;
+transition:opacity 200ms;
+}
+#leaf-b.shadowed::after{opacity:1}
+
+/* ── PAGE CONTENT ── */
 .pg{position:relative;width:100%;height:100%;overflow:hidden;background:var(–paper)}
 .pg img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .pg .shade{
@@ -154,7 +177,7 @@ height:28%;display:flex;align-items:center;justify-content:center;
 }
 .pg.empty .mid span{font-size:7px;letter-spacing:4px;color:#c5c0b7;text-transform:uppercase}
 
-/* COVER */
+/* ── COVER ── */
 .cover{position:relative;width:100%;height:100%;overflow:hidden}
 .cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .cover .veil{
@@ -178,7 +201,7 @@ line-height:1;letter-spacing:-1px;
 .cover .yr{position:absolute;bottom:28px;right:26px;z-index:3;
 font-size:7px;letter-spacing:2px;color:rgba(237,234,222,.22)}
 
-/* BACK COVER */
+/* ── BACK COVER ── */
 .bcov{
 position:relative;width:100%;height:100%;background:var(–paper);
 display:flex;align-items:center;justify-content:center;overflow:hidden;
@@ -194,7 +217,7 @@ font-family:‘EB Garamond’,serif;font-style:italic;
 font-size:20px;color:#bbb;letter-spacing:6px;position:relative;z-index:2;
 }
 
-/* NAV */
+/* ── NAV ── */
 #nav{
 position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
 display:flex;align-items:center;gap:20px;z-index:500;
@@ -202,8 +225,8 @@ opacity:0;visibility:hidden;transition:opacity .5s .3s,visibility .5s .3s;
 }
 #nav.on{opacity:1;visibility:visible}
 .nb{
-width:36px;height:36px;background:none;border:.5px solid #1e1e1e;color:#3a3a3a;
-cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;
+width:40px;height:40px;background:none;border:.5px solid #1e1e1e;color:#3a3a3a;
+cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;
 transition:border-color .18s,color .18s,transform .1s;-webkit-tap-highlight-color:transparent;
 }
 .nb:hover:not(:disabled){border-color:#444;color:#999;transform:scale(1.05)}
@@ -212,7 +235,7 @@ transition:border-color .18s,color .18s,transform .1s;-webkit-tap-highlight-colo
 #ctr{font-size:7px;letter-spacing:3px;color:#282828;min-width:68px;text-align:center;text-transform:uppercase}
 #btn-close{
 position:fixed;top:22px;right:24px;font-size:7px;letter-spacing:4px;text-transform:uppercase;
-color:#1e1e1e;background:none;border:none;cursor:pointer;z-index:500;padding:8px;
+color:#1e1e1e;background:none;border:none;cursor:pointer;z-index:500;padding:10px;
 opacity:0;visibility:hidden;transition:opacity .4s .3s,visibility .4s .3s,color .2s;
 -webkit-tap-highlight-color:transparent;
 }
@@ -225,6 +248,11 @@ white-space:nowrap;z-index:500;opacity:0;visibility:hidden;
 transition:opacity .4s .5s,visibility .4s .5s;
 }
 #kh.on{opacity:1;visibility:visible}
+
+/* Hot zones */
+#hz-right,#hz-left{position:absolute;top:0;z-index:40;cursor:pointer}
+#hz-right{right:0} #hz-left{left:0}
+
 @media(max-width:680px){#kh{display:none}}
 </style>
 
@@ -240,16 +268,24 @@ transition:opacity .4s .5s,visibility .4s .5s;
 </div>
 
 <div id="stage">
-  <div id="book">
-    <div class="spage" id="sp-left"></div>
-    <div class="spage" id="sp-right"></div>
-    <div id="leaf">
-      <div id="leaf-front"></div>
-      <div id="leaf-back"><div id="leaf-back-inner"></div></div>
-    </div>
-    <div id="spine"></div>
-    <div id="hz-right"></div>
-    <div id="hz-left"></div>
+  <div id="book-shadow">
+    <div id="book">
+      <div class="spage" id="sp-left"></div>
+      <div class="spage" id="sp-right"></div>
+
+```
+  <!-- Flip leaf: two faces animated independently -->
+  <div id="leaf">
+    <div id="leaf-a"></div>
+    <div id="leaf-b"></div>
+  </div>
+
+  <div id="spine"></div>
+  <div id="hz-right"></div>
+  <div id="hz-left"></div>
+</div>
+```
+
   </div>
 </div>
 
@@ -265,7 +301,9 @@ transition:opacity .4s .5s,visibility .4s .5s;
 (function(){
 'use strict';
 
-/* ── IMÁGENES ── */
+/* ════════════════════════
+   IMÁGENES
+   ════════════════════════ */
 var IMGS = [
   {src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo2.JPG',a:'DÍAS',b:'POR DELANTE'},
   {src:'https://raw.githubusercontent.com/edsoncanaled/extractos/main/img/ejemplo3.png',a:'LUZ',b:'OBLICUA'},
@@ -277,75 +315,76 @@ var LABELS = [
   {a:'NOCHE',b:'ABIERTA'},{a:'CAMPO',b:'VACÍO'},{a:'AGUA',b:'QUIETA'},
   {a:'PIEDRA',b:'GRIS'},{a:'CIELO',b:'BAJO'},{a:'FIN',b:'DE SERIE'},
 ];
-var N = 15;
-var FTOTAL = Math.ceil((N+1)/2);
+var N=15, FTOTAL=Math.ceil((N+1)/2);
 
-/* ── ELEMENTS ── */
+/* ════════════════════════
+   ELEMENTS
+   ════════════════════════ */
+var shadow  = document.getElementById('book-shadow');
 var book    = document.getElementById('book');
 var spL     = document.getElementById('sp-left');
 var spR     = document.getElementById('sp-right');
 var leaf    = document.getElementById('leaf');
-var lFront  = document.getElementById('leaf-front');
-var lBackIn = document.getElementById('leaf-back-inner');
+var leafA   = document.getElementById('leaf-a');   // front (outgoing)
+var leafB   = document.getElementById('leaf-b');   // back  (incoming)
 var spineEl = document.getElementById('spine');
 var hzR     = document.getElementById('hz-right');
 var hzL     = document.getElementById('hz-left');
 
-/* ── SIZING ── */
-var mob = function(){ return window.innerWidth <= 680; };
-var PW=0, PH=0;
+/* ════════════════════════
+   SIZING
+   ════════════════════════ */
+var mob=function(){return window.innerWidth<=680;};
+var PW=0,PH=0;
 function calcSize(){
-  var vw=window.innerWidth, vh=window.innerHeight;
+  var vw=window.innerWidth,vh=window.innerHeight;
   if(mob()){
-    PH = Math.round(vh*.76);
-    PW = Math.min(Math.round(PH*.70), Math.round(vw*.88));
+    PH=Math.round(vh*.76);
+    PW=Math.min(Math.round(PH*.70),Math.round(vw*.88));
   } else {
-    PH = Math.min(Math.round(vh*.82),720);
-    PW = Math.min(Math.round(PH*.70), Math.round(vw*.40), 500);
+    PH=Math.min(Math.round(vh*.82),720);
+    PW=Math.min(Math.round(PH*.70),Math.round(vw*.40),500);
   }
 }
 calcSize();
 
-/* ── STATE ── */
+/* ════════════════════════
+   STATE
+   ════════════════════════ */
 var cur=0, opened=false, flipping=false, flipTimer=null;
-var FLIP_MS = 460;
 
-/* ── LAYOUT ── */
-function layout(animateWidth){
-  var m  = mob();
-  var bw = (cur===0 && !opened) ? PW : PW*2;
+/* ════════════════════════
+   LAYOUT
+   ════════════════════════ */
+function layout(animW){
+  var m=mob();
+  var bw=(cur===0&&!opened)?PW:PW*2;
 
-  book.style.width  = bw+'px';
-  book.style.height = PH+'px';
-  book.style.transition = animateWidth
-    ? 'width 460ms cubic-bezier(.645,.045,.355,1)'
-    : 'width 0ms';
+  /* shadow wrapper — drives the width transition */
+  shadow.style.width =bw+'px';
+  shadow.style.height=PH+'px';
+  shadow.style.transition=animW
+    ?'width 460ms cubic-bezier(.645,.045,.355,1)'
+    :'width 0ms';
 
-  var showL = !m && opened;
+  /* book clips content */
+  book.style.width =bw+'px';
+  book.style.height=PH+'px';
 
-  /* left static page */
-  spL.style.display = showL ? 'block' : 'none';
-  spL.style.width   = PW+'px';
-  spL.style.height  = PH+'px';
-  spL.style.left    = '0';
+  var showL=!m&&opened;
 
-  /* right static page */
-  spR.style.width  = PW+'px';
-  spR.style.height = PH+'px';
-  spR.style.right  = '0';
-  spR.style.left   = 'auto';
+  spL.style.display=showL?'block':'none';
+  spL.style.width=PW+'px'; spL.style.height=PH+'px'; spL.style.left='0';
 
-  /* leaf size (always PW wide) */
-  leaf.style.width  = PW+'px';
-  leaf.style.height = PH+'px';
+  spR.style.width=PW+'px'; spR.style.height=PH+'px';
+  spR.style.right='0'; spR.style.left='auto';
 
-  /* spine */
-  var sw = (showL && !m) ? 14 : 0;
-  spineEl.style.left   = showL ? (PW-sw/2)+'px' : '-100px';
-  spineEl.style.width  = sw+'px';
-  spineEl.style.height = PH+'px';
+  leaf.style.width=PW+'px'; leaf.style.height=PH+'px';
 
-  /* hot zones */
+  var sw=(showL&&!m)?14:0;
+  spineEl.style.left=showL?(PW-sw/2)+'px':'-100px';
+  spineEl.style.width=sw+'px'; spineEl.style.height=PH+'px';
+
   hzR.style.width=PW+'px'; hzR.style.height=PH+'px';
   hzR.style.right='0'; hzR.style.top='0';
   hzL.style.width=(showL?PW:0)+'px'; hzL.style.height=PH+'px';
@@ -353,7 +392,9 @@ function layout(animateWidth){
 }
 layout(false);
 
-/* ── HTML BUILDERS ── */
+/* ════════════════════════
+   HTML BUILDERS
+   ════════════════════════ */
 function coverHTML(){
   var s=IMGS[0]?IMGS[0].src:null;
   return '<div class="cover">'
@@ -365,17 +406,13 @@ function coverHTML(){
     +'<h2 class="cv-t">Extractos</h2>'
     +'<div class="cv-r"></div>'
     +'<p class="cv-s">Colección Visual</p>'
-    +'</div>'
-    +'<span class="yr">© 2025</span>'
-    +'</div>';
+    +'</div><span class="yr">© 2025</span></div>';
 }
-function bcovHTML(){
-  return '<div class="bcov"><em>extractos</em></div>';
-}
+function bcovHTML(){return '<div class="bcov"><em>extractos</em></div>';}
 function pageHTML(idx){
   idx=Math.max(0,Math.min(idx,N+1));
-  if(idx===0) return coverHTML();
-  if(idx>N)   return bcovHTML();
+  if(idx===0)return coverHTML();
+  if(idx>N)  return bcovHTML();
   var d=IMGS[idx-1]||null;
   var lbl=LABELS[idx-1]||{a:'—',b:'—'};
   var n=('0'+idx).slice(-2);
@@ -386,146 +423,130 @@ function pageHTML(idx){
       +'<img class="bg" src="'+d.src+'" alt="'+a+'" loading="lazy">'
       +'<div class="shade"></div>'
       +'<span class="la">'+a+'</span><span class="lb">'+b+'</span>'
-      +'<span class="ln '+(isL?'l':'r')+'">'+n+'</span>'
-      +'</div>';
+      +'<span class="ln '+(isL?'l':'r')+'">'+n+'</span></div>';
   }
   return '<div class="pg empty">'
     +'<div class="mid"><span>imagen '+n+'</span></div>'
     +'<span class="la">'+a+'</span><span class="lb">'+b+'</span>'
-    +'<span class="ln '+(isL?'l':'r')+'">'+n+'</span>'
-    +'</div>';
+    +'<span class="ln '+(isL?'l':'r')+'">'+n+'</span></div>';
 }
 
-/* ── STATIC PAGES ── */
+/* ════════════════════════
+   STATIC PAGES
+   ════════════════════════ */
 function refreshStatic(){
   var m=mob();
   if(cur===0){
-    if(!m) spL.innerHTML=bcovHTML();
+    if(!m)spL.innerHTML=bcovHTML();
     spR.innerHTML=coverHTML();
   } else if(cur>=FTOTAL){
-    if(!m) spL.innerHTML=pageHTML(N);
+    if(!m)spL.innerHTML=pageHTML(N);
     spR.innerHTML=pageHTML(N+1);
   } else {
     var li=(cur-1)*2+1, ri=cur*2;
-    if(!m) spL.innerHTML=pageHTML(Math.min(li,N+1));
+    if(!m)spL.innerHTML=pageHTML(Math.min(li,N+1));
     spR.innerHTML=pageHTML(Math.min(ri,N+1));
   }
 }
 
-/* ── FLIP ENGINE ──────────────────────────────
-   dir=1  forward:  leaf at right, rotates 0 → -180
-   dir=-1 backward: leaf at left,  rotates -180 → 0
+/* ════════════════════════════════════════════════
+   FLIP ENGINE — iOS-safe, no preserve-3d on filter
 
-   The leaf's LEFT EDGE is always the pivot.
-   On desktop the pivot is at the spine (center of book).
-   On mobile the pivot is the left edge of the single page.
-
-   forward:  leaf.left = spine (PW on desktop, 0 on mobile)
-   backward: leaf.left = 0     (left edge of left page or single page)
-             but we set transform-origin to RIGHT so it pivots from right.
-   ─────────────────────────────────────────────── */
+   Technique: two separate divs (A=front, B=back).
+   Forward flip (→):
+     • Leaf sits at RIGHT half of book (or full page on mobile)
+     • A: scaleX 1→0  (page collapses toward spine) with shadow
+     • B: scaleX 0→1  (page expands from spine)     with shadow
+     Both use transform-origin:left center (pivot = spine)
+   Backward flip (←): same but reversed
+   ════════════════════════════════════════════════ */
 function doFlip(dir, frontIdx, backIdx, openingCover){
-  if(flipping) return;
-  flipping = true;
+  if(flipping)return;
+  flipping=true;
 
-  FLIP_MS = mob() ? 400 : 460;
+  var ms=mob()?390:450;
+  var ease='cubic-bezier(.645,.045,.355,1)';
 
-  /* fill faces */
-  lFront.innerHTML  = pageHTML(frontIdx);
-  lBackIn.innerHTML = pageHTML(backIdx);
+  /* populate faces */
+  leafA.innerHTML=pageHTML(frontIdx);
+  leafB.innerHTML=pageHTML(backIdx);
 
-  /* position leaf and set starting transform */
-  if(dir === 1){
-    /* Forward: leaf starts on the right half, pivot=left edge of leaf = spine */
-    leaf.style.transformOrigin = 'left center';
-    if(mob()){
-      leaf.style.left = '0';
-    } else {
-      leaf.style.left = (opened ? PW : 0)+'px';
-    }
-    /* start: flat (face showing) */
-    leaf.style.transition = 'none';
-    leaf.style.transform  = 'rotateY(0deg)';
+  /* position leaf */
+  var m=mob();
+  if(dir===1){
+    /* Forward: leaf at right (spine is left edge) */
+    leaf.style.left=(m||!opened)?'0':PW+'px';
+    leafA.style.transformOrigin='left center';
+    leafB.style.transformOrigin='left center';
   } else {
-    /* Backward: leaf starts on the left half, pivot=right edge = spine */
-    leaf.style.transformOrigin = 'right center';
-    if(mob()){
-      leaf.style.left = '0';
-    } else {
-      leaf.style.left = '0';
-    }
-    leaf.style.transition = 'none';
-    leaf.style.transform  = 'rotateY(0deg)';
+    /* Backward: leaf at left (spine is right edge) */
+    leaf.style.left='0';
+    leafA.style.transformOrigin='right center';
+    leafB.style.transformOrigin='right center';
   }
 
-  leaf.style.display = 'block';
+  /* set initial state — no transition */
+  setT(leafA,'none','scaleX(1)');
+  setT(leafB,'none','scaleX(0)');
+  leafA.classList.remove('shadowed');
+  leafB.classList.remove('shadowed');
+
+  leaf.style.display='block';
 
   /* expand book if opening cover */
   if(openingCover){
-    opened = true;
+    opened=true;
     layout(true);
   }
 
-  /* force reflow then animate */
+  /* force reflow */
   leaf.getBoundingClientRect();
 
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      leaf.style.transition = 'transform '+FLIP_MS+'ms cubic-bezier(.645,.045,.355,1)';
-      if(dir === 1){
-        leaf.style.transform = 'rotateY(-180deg)';
-      } else {
-        leaf.style.transform = 'rotateY(180deg)';
-      }
-    });
-  });
+  /* Phase 1: collapse front (0 → ms/2) */
+  setT(leafA,'scaleX '+ms/2+'ms '+ease,'scaleX(0)');
+  leafA.classList.add('shadowed');
 
-  if(flipTimer) clearTimeout(flipTimer);
-  flipTimer = setTimeout(function(){
-    leaf.style.display    = 'none';
-    leaf.style.transition = 'none';
-    flipping  = false;
-    flipTimer = null;
-    /* if going back to cover, shrink book */
-    if(cur===0){
-      opened = false;
-      layout(true);
-    } else {
-      layout(false);
-    }
+  /* Phase 2: expand back (ms/2 → ms) */
+  setTimeout(function(){
+    if(!flipping)return;
+    setT(leafB,'scaleX '+ms/2+'ms '+ease,'scaleX(1)');
+    leafB.classList.add('shadowed');
+    leafA.classList.remove('shadowed');
+    leafA.style.display='none';
+  }, ms/2);
+
+  /* Done */
+  if(flipTimer)clearTimeout(flipTimer);
+  flipTimer=setTimeout(function(){
+    leaf.style.display='none';
+    leafA.style.display='';
+    flipping=false; flipTimer=null;
+    if(cur===0){opened=false;layout(true);}
+    else layout(false);
     refreshStatic();
     setNav();
-  }, FLIP_MS+40);
+  }, ms+30);
 }
 
-/* ── NAVIGATION ── */
+function setT(el, transition, transform){
+  el.style.transition=transition==='none'?'none':'transform '+transition;
+  el.style.transform=transform;
+}
+
+/* ════════════════════════
+   NAVIGATION
+   ════════════════════════ */
 function next(){
-  if(flipping||cur>=FTOTAL) return;
-  var fi, bi;
-  if(cur===0){
-    fi=0; bi=1;
-    cur++; setNav();
-    doFlip(1,fi,bi,true);
-  } else {
-    fi=Math.min(cur*2,N+1);
-    bi=Math.min(cur*2+1,N+1);
-    cur++; setNav();
-    doFlip(1,fi,bi,false);
-  }
+  if(flipping||cur>=FTOTAL)return;
+  var fi,bi;
+  if(cur===0){fi=0;bi=1;cur++;setNav();doFlip(1,fi,bi,true);}
+  else{fi=Math.min(cur*2,N+1);bi=Math.min(cur*2+1,N+1);cur++;setNav();doFlip(1,fi,bi,false);}
 }
 function prev(){
-  if(flipping||cur<=0) return;
+  if(flipping||cur<=0)return;
   var fi,bi;
-  if(cur===1){
-    fi=1; bi=0;
-    cur--; setNav();
-    doFlip(-1,fi,bi,false);
-  } else {
-    fi=Math.min((cur-1)*2,N+1);
-    bi=Math.min((cur-1)*2+1,N+1);
-    cur--; setNav();
-    doFlip(-1,fi,bi,false);
-  }
+  if(cur===1){fi=1;bi=0;cur--;setNav();doFlip(-1,fi,bi,false);}
+  else{fi=Math.min((cur-1)*2,N+1);bi=Math.min((cur-1)*2+1,N+1);cur--;setNav();doFlip(-1,fi,bi,false);}
 }
 function setNav(){
   document.getElementById('bp').disabled=cur<=0;
@@ -537,61 +558,51 @@ function setNav(){
   el.textContent=('0'+l).slice(-2)+' · '+(r<=N?('0'+r).slice(-2):'—');
 }
 
-/* ── OPEN / CLOSE ── */
+/* ════════════════════════
+   OPEN / CLOSE
+   ════════════════════════ */
 function openBook(){
   document.getElementById('intro').classList.add('gone');
-  ['stage','nav','btn-close','kh'].forEach(function(id){
-    document.getElementById(id).classList.add('on');
-  });
-  cur=0; opened=false;
-  leaf.style.display='none';
-  layout(false); refreshStatic(); setNav();
+  ['stage','nav','btn-close','kh'].forEach(function(id){document.getElementById(id).classList.add('on');});
+  cur=0;opened=false;leaf.style.display='none';
+  layout(false);refreshStatic();setNav();
 }
 function closeBook(){
   if(flipTimer){clearTimeout(flipTimer);flipTimer=null;}
   flipping=false;
-  ['stage','nav','btn-close','kh'].forEach(function(id){
-    document.getElementById(id).classList.remove('on');
-  });
+  ['stage','nav','btn-close','kh'].forEach(function(id){document.getElementById(id).classList.remove('on');});
   setTimeout(function(){
-    cur=0; opened=false;
-    leaf.style.display='none';
-    layout(false); refreshStatic(); setNav();
+    cur=0;opened=false;leaf.style.display='none';
+    layout(false);refreshStatic();setNav();
     document.getElementById('intro').classList.remove('gone');
   },600);
 }
 
-/* ── EVENTS ── */
+/* ════════════════════════
+   EVENTS
+   ════════════════════════ */
 document.getElementById('btn-open').addEventListener('click',openBook);
 document.getElementById('btn-close').addEventListener('click',closeBook);
 document.getElementById('bp').addEventListener('click',prev);
 document.getElementById('bn').addEventListener('click',next);
 hzR.addEventListener('click',function(e){e.stopPropagation();next();});
 hzL.addEventListener('click',function(e){e.stopPropagation();prev();});
-
 document.addEventListener('keydown',function(e){
   if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}
   else if(e.key==='ArrowLeft'){e.preventDefault();prev();}
-  else if(e.key==='Escape') closeBook();
+  else if(e.key==='Escape')closeBook();
 });
-
 var tx=0,ty=0;
-document.addEventListener('touchstart',function(e){
-  tx=e.touches[0].clientX;ty=e.touches[0].clientY;
-},{passive:true});
+document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
 document.addEventListener('touchend',function(e){
-  var dx=e.changedTouches[0].clientX-tx;
-  var dy=e.changedTouches[0].clientY-ty;
-  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>36) dx<0?next():prev();
+  var dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>36)dx<0?next():prev();
 },{passive:true});
+window.addEventListener('resize',function(){calcSize();layout(false);refreshStatic();});
 
-window.addEventListener('resize',function(){
-  calcSize(); layout(false); refreshStatic();
-});
-
-/* ── INIT ── */
+/* init */
 leaf.style.display='none';
-refreshStatic(); setNav();
+refreshStatic();setNav();
 
 })();
 </script>
